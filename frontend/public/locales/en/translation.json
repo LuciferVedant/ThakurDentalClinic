@@ -1,0 +1,97 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About Us",
+    "blogs": "Blogs",
+    "contact": "Contact",
+    "signIn": "Sign In"
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "We're here to help and answer any question you might have. We look forward to hearing from you.",
+    "visitUs": "Visit Us",
+    "callUs": "Call Us",
+    "emailUs": "Email Us",
+    "businessHours": "Business Hours",
+    "formTitle": "Send us a Message",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "subject": "Subject",
+    "message": "Your Message",
+    "sendMessage": "Send Message",
+    "sending": "Sending...",
+    "sent": "Message Sent!",
+    "failed": "Failed to send message. Please try again.",
+    "address": "Thakur Dental Clinic, In front of Central Bank of India, Abhanpur, Raipur, Chhattisgarh 493661",
+    "hours": "Mon - Sat: 10:00 AM - 8:00 PM",
+    "phoneNumber": "+91 98765 43210",
+    "emailAddress": "info@thakurdental.com"
+  },
+  "about": {
+    "title": "About Us",
+    "welcome": "Welcome to Thakur Dental Clinic, where your smile is our top priority. Established in 2010, we have been serving the community with dedication and excellence in dental care.",
+    "mission": "Our mission is to provide comprehensive dental services in a comfortable and hygienic environment. We believe in a patient-centric approach, ensuring that each individual receives personalized care tailored to their specific needs.",
+    "teamTitle": "Our Team",
+    "teamDescription": "We are proud to have a team of highly skilled and experienced dentists who are experts in various fields of dentistry, including orthodontics, endodontics, periodontics, and cosmetic dentistry. Our support staff is friendly and always ready to assist you.",
+    "facilitiesTitle": "Our Facilities",
+    "facilitiesDescription": "Our clinic is equipped with state-of-the-art technology, including digital X-rays, intraoral cameras, and advanced sterilization systems. We adhere to strict infection control protocols to ensure the safety of our patients and staff."
+  },
+  "landing": {
+    "heroTitle1": "Your Smile,",
+    "heroTitle2": "Our Passion",
+    "heroSubtitle": "Experience world-class dental care with state-of-the-art technology and a team of dedicated professionals committed to your oral health.",
+    "bookAppointment": "Book Appointment",
+    "contactUs": "Contact Us",
+    "whyChooseUs": "Why Choose Us",
+    "comprehensiveCare": "Comprehensive Dental Care",
+    "features": {
+      "expertDoctors": {
+        "title": "Expert Doctors",
+        "description": "Our team consists of highly qualified and experienced dental professionals."
+      },
+      "modernTechnology": {
+        "title": "Modern Technology",
+        "description": "We use the latest dental equipment and technology for precise treatments."
+      },
+      "comfortableEnvironment": {
+        "title": "Comfortable Environment",
+        "description": "A relaxing and hygienic atmosphere to make your visit pleasant."
+      }
+    }
+  },
+  "blog": {
+    "title": "Health Tips & News",
+    "subtitle": "Stay updated with the latest in dental care.",
+    "loading": "Loading...",
+    "category": "Dental Care"
+  },
+  "login": {
+    "clinicName": "Thakur Dental Clinic",
+    "signInToAccount": "Sign in to your account",
+    "createNewAccount": "Create a new account",
+    "staffPortalAccess": "Staff Portal Access",
+    "patientPortal": "Patient Portal",
+    "staffPortal": "Staff Portal",
+    "signInWithGoogle": "Sign in with Google",
+    "orContinueWithEmail": "Or continue with email",
+    "orSignInWithCredentials": "Or sign in with credentials",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "phoneNumber": "Phone Number",
+    "emailAddress": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "show": "Show",
+    "hide": "Hide",
+    "processing": "Processing...",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "createAccount": "Create Account",
+    "dontHaveAccount": "Don't have an account? Sign up",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "passwordsDontMatch": "Passwords don't match",
+    "staffCredentialsNote": "Staff credentials are provided by your administrator.",
+    "googleLinkNote": "You can also link your Google account after your first login."
+  }
+}

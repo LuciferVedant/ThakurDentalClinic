@@ -1,0 +1,97 @@
+{
+  "navbar": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "blogs": "Blog",
+    "contact": "Contact",
+    "signIn": "Se Connecter"
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "subtitle": "Nous sommes là pour vous aider et répondre à toutes vos questions.",
+    "visitUs": "Rendez-nous Visite",
+    "callUs": "Appelez-nous",
+    "emailUs": "Envoyez-nous un Email",
+    "businessHours": "Heures d'Ouverture",
+    "formTitle": "Envoyez-nous un Message",
+    "fullName": "Nom Complet",
+    "email": "Adresse Email",
+    "phone": "Numéro de Téléphone",
+    "subject": "Sujet",
+    "message": "Votre Message",
+    "sendMessage": "Envoyer le Message",
+    "sending": "Envoi en cours...",
+    "sent": "Message Envoyé!",
+    "failed": "Échec de l'envoi. Veuillez réessayer.",
+    "address": "Clinique Dentaire Thakur, En face de la Banque Centrale de l'Inde, Abhanpur, Raipur, Chhattisgarh 493661",
+    "hours": "Lun - Sam: 10:00 - 20:00",
+    "phoneNumber": "+91 98765 43210",
+    "emailAddress": "info@thakurdental.com"
+  },
+  "about": {
+    "title": "À Propos de Nous",
+    "welcome": "Bienvenue à la Clinique Dentaire Thakur, où votre sourire est notre priorité absolue. Fondée en 2010, nous servons la communauté avec dévouement et excellence en soins dentaires.",
+    "mission": "Notre mission est de fournir des services dentaires complets dans un environnement confortable et hygiénique. Nous croyons en une approche centrée sur le patient, garantissant des soins personnalisés adaptés aux besoins spécifiques de chaque individu.",
+    "teamTitle": "Notre Équipe",
+    "teamDescription": "Nous sommes fiers d'avoir une équipe de dentistes hautement qualifiés et expérimentés, experts dans divers domaines de la dentisterie, y compris l'orthodontie, l'endodontie, la parodontie et la dentisterie esthétique.",
+    "facilitiesTitle": "Nos Installations",
+    "facilitiesDescription": "Notre clinique est équipée de technologies de pointe, incluant des radiographies numériques, des caméras intra-orales et des systèmes de stérilisation avancés. Nous respectons des protocoles stricts de contrôle des infections."
+  },
+  "landing": {
+    "heroTitle1": "Votre Sourire,",
+    "heroTitle2": "Notre Passion",
+    "heroSubtitle": "Découvrez des soins dentaires de classe mondiale avec une technologie de pointe et une équipe de professionnels dévoués à votre santé bucco-dentaire.",
+    "bookAppointment": "Prendre Rendez-vous",
+    "contactUs": "Nous Contacter",
+    "whyChooseUs": "Pourquoi Nous Choisir",
+    "comprehensiveCare": "Soins Dentaires Complets",
+    "features": {
+      "expertDoctors": {
+        "title": "Médecins Experts",
+        "description": "Notre équipe est composée de professionnels dentaires hautement qualifiés et expérimentés."
+      },
+      "modernTechnology": {
+        "title": "Technologie Moderne",
+        "description": "Nous utilisons les derniers équipements et technologies dentaires pour des traitements précis."
+      },
+      "comfortableEnvironment": {
+        "title": "Environnement Confortable",
+        "description": "Une atmosphère relaxante et hygiénique pour rendre votre visite agréable."
+      }
+    }
+  },
+  "blog": {
+    "title": "Conseils Santé et Actualités",
+    "subtitle": "Restez informé des dernières nouvelles en matière de soins dentaires.",
+    "loading": "Chargement...",
+    "category": "Soins Dentaires"
+  },
+  "login": {
+    "clinicName": "Clinique Dentaire Thakur",
+    "signInToAccount": "Connectez-vous à votre compte",
+    "createNewAccount": "Créer un nouveau compte",
+    "staffPortalAccess": "Accès Portail Personnel",
+    "patientPortal": "Portail Patient",
+    "staffPortal": "Portail Personnel",
+    "signInWithGoogle": "Se connecter avec Google",
+    "orContinueWithEmail": "Ou continuer avec email",
+    "orSignInWithCredentials": "Ou se connecter avec identifiants",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "phoneNumber": "Numéro de Téléphone",
+    "emailAddress": "Adresse Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "processing": "Traitement...",
+    "signIn": "Se Connecter",
+    "signingIn": "Connexion...",
+    "createAccount": "Créer un Compte",
+    "dontHaveAccount": "Pas de compte? Inscrivez-vous",
+    "alreadyHaveAccount": "Déjà un compte? Connectez-vous",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+    "staffCredentialsNote": "Les identifiants du personnel sont fournis par votre administrateur.",
+    "googleLinkNote": "Vous pouvez également lier votre compte Google après votre première connexion."
+  }
+}

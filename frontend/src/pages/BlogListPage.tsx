@@ -7,8 +7,10 @@ import Navbar from '@/components/Navbar';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { useTranslation } from 'react-i18next';
 
 const BlogListPage: React.FC = () => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { posts, isLoading, error } = useAppSelector((state) => state.blog);
 
@@ -28,12 +30,12 @@ const BlogListPage: React.FC = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl font-bold text-foreground">Health Tips & News</h1>
-            <p className="mt-4 text-xl text-muted-foreground">Stay updated with the latest in dental care.</p>
+            <h1 className="text-4xl font-bold text-foreground">{t('blog.title')}</h1>
+            <p className="mt-4 text-xl text-muted-foreground">{t('blog.subtitle')}</p>
           </motion.div>
 
           {isLoading ? (
-            <div className="text-center py-12 text-muted-foreground">Loading...</div>
+            <div className="text-center py-12 text-muted-foreground">{t('blog.loading')}</div>
           ) : error ? (
             <div className="text-center py-12 text-destructive">{error}</div>
           ) : (
@@ -57,7 +59,7 @@ const BlogListPage: React.FC = () => {
                       <CardHeader className="p-6 pb-4">
                         <div className="flex items-center justify-between mb-2">
                           <Badge variant="secondary" className="uppercase tracking-wider">
-                            Dental Care
+                            {t('blog.category')}
                           </Badge>
                         </div>
                         <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight">

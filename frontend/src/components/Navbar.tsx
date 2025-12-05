@@ -16,10 +16,14 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import ThemeSwitcher from '@/components/ThemeSwitcher';
 
 const Navbar: React.FC = () => {
+  const { t } = useTranslation();
   return (
-    <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+    <nav className="fixed w-full z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -36,28 +40,28 @@ const Navbar: React.FC = () => {
                 <NavigationMenuItem>
                   <Link to="/">
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Home
+                      {t('navbar.home')}
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/about">
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      About Us
+                      {t('navbar.about')}
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/blogs">
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Blogs
+                      {t('navbar.blogs')}
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
                   <Link to="/contact">
                     <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                      Contact
+                      {t('navbar.contact')}
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
@@ -66,9 +70,11 @@ const Navbar: React.FC = () => {
             
             <Link to="/login">
               <Button variant="default" className="bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
-                Sign In
+                {t('navbar.signIn')}
               </Button>
             </Link>
+            <LanguageSwitcher />
+            <ThemeSwitcher />
           </div>
 
           {/* Mobile Navigation */}
@@ -82,24 +88,28 @@ const Navbar: React.FC = () => {
               <SheetContent>
                 <SheetHeader>
                   <SheetTitle className="text-left">Menu</SheetTitle>
+                  <div className="absolute right-4 top-4 flex items-center gap-2">
+                    <ThemeSwitcher />
+                    <LanguageSwitcher />
+                  </div>
                 </SheetHeader>
                 <div className="flex flex-col space-y-4 mt-8">
                   <Link to="/" className="text-lg font-medium hover:text-primary-600 transition-colors">
-                    Home
+                    {t('navbar.home')}
                   </Link>
                   <Link to="/about" className="text-lg font-medium hover:text-primary-600 transition-colors">
-                    About Us
+                    {t('navbar.about')}
                   </Link>
                   <Link to="/blogs" className="text-lg font-medium hover:text-primary-600 transition-colors">
-                    Blogs
+                    {t('navbar.blogs')}
                   </Link>
                   <Link to="/contact" className="text-lg font-medium hover:text-primary-600 transition-colors">
-                    Contact
+                    {t('navbar.contact')}
                   </Link>
                   <div className="pt-4">
                     <Link to="/login" className="w-full">
                       <Button className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white">
-                        Sign In
+                        {t('navbar.signIn')}
                       </Button>
                     </Link>
                   </div>

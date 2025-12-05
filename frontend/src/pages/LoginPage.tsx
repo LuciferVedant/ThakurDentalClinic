@@ -8,8 +8,10 @@ import {
   registerPatient,
   clearError,
 } from "../store/slices/authSlice";
+import { useTranslation } from 'react-i18next';
 
 const LoginPage: React.FC = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<"patient" | "staff">("patient");
   const [isLogin, setIsLogin] = useState(true);
 
@@ -63,8 +65,7 @@ const LoginPage: React.FC = () => {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      // Ideally dispatch an error action or set local error state
-      alert("Passwords don't match");
+      alert(t('login.passwordsDontMatch'));
       return;
     }
     await dispatch(
@@ -88,7 +89,7 @@ const LoginPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-4 py-12">
       <div className="max-w-md w-full">
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -108,40 +109,40 @@ const LoginPage: React.FC = () => {
             </svg>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-            Thakur Dental Clinic
+            {t('login.clinicName')}
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-muted-foreground">
             {activeTab === "patient"
               ? isLogin
-                ? "Sign in to your account"
-                : "Create a new account"
-              : "Staff Portal Access"}
+                ? t('login.signInToAccount')
+                : t('login.createNewAccount')
+              : t('login.staffPortalAccess')}
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div className="bg-card/80 backdrop-blur-lg rounded-2xl shadow-xl overflow-hidden border border-border">
           {/* Tabs */}
-          <div className="flex border-b border-gray-200">
+          <div className="flex border-b border-border">
             <button
               className={`flex-1 py-4 text-sm font-medium transition-colors duration-200 ${
                 activeTab === "patient"
                   ? "text-primary-600 border-b-2 border-primary-600 bg-primary-50/50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
               onClick={() => setActiveTab("patient")}
             >
-              Patient Portal
+              {t('login.patientPortal')}
             </button>
             <button
               className={`flex-1 py-4 text-sm font-medium transition-colors duration-200 ${
                 activeTab === "staff"
                   ? "text-primary-600 border-b-2 border-primary-600 bg-primary-50/50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
               }`}
               onClick={() => setActiveTab("staff")}
             >
-              Staff Portal
+              {t('login.staffPortal')}
             </button>
           </div>
 
@@ -153,13 +154,13 @@ const LoginPage: React.FC = () => {
               </div>
             )}
 
-            {/* Google Login (Available for both now) */}
+            {/* Google Login */}
             <div className="mb-6">
               <div className="flex justify-center">
                 <button
                   type="button"
                   onClick={() => googleLogin()}
-                  className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  className="flex items-center justify-center w-full px-4 py-2 border border-border rounded-lg shadow-sm bg-card text-sm font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
                   <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
                     <path
@@ -179,14 +180,14 @@ const LoginPage: React.FC = () => {
                       fill="#EA4335"
                     />
                   </svg>
-                  Sign in with Google
+                  {t('login.signInWithGoogle')}
                 </button>
               </div>
               <div className="mt-4 text-center">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {activeTab === "patient"
-                    ? "Or continue with email"
-                    : "Or sign in with credentials"}
+                    ? t('login.orContinueWithEmail')
+                    : t('login.orSignInWithCredentials')}
                 </p>
               </div>
             </div>
@@ -194,7 +195,7 @@ const LoginPage: React.FC = () => {
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
             </div>
 
@@ -209,33 +210,33 @@ const LoginPage: React.FC = () => {
                     <>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            First Name
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('login.firstName')}
                           </label>
                           <input
                             type="text"
                             required
                             value={firstName}
                             onChange={(e) => setFirstName(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Last Name
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('login.lastName')}
                           </label>
                           <input
                             type="text"
                             required
                             value={lastName}
                             onChange={(e) => setLastName(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
                           />
                         </div>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Phone Number
+                          {t('login.phoneNumber')}
                         </label>
                         <input
                           type="tel"
@@ -249,7 +250,7 @@ const LoginPage: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address
+                      {t('login.emailAddress')}
                     </label>
                     <input
                       type="email"
@@ -262,7 +263,7 @@ const LoginPage: React.FC = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Password
+                      {t('login.password')}
                     </label>
                     <div className="relative">
                       <input
@@ -275,9 +276,9 @@ const LoginPage: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                       >
-                        {showPassword ? "Hide" : "Show"}
+                        {showPassword ? t('login.hide') : t('login.show')}
                       </button>
                     </div>
                   </div>
@@ -285,7 +286,7 @@ const LoginPage: React.FC = () => {
                   {!isLogin && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Confirm Password
+                        {t('login.confirmPassword')}
                       </label>
                       <input
                         type="password"
@@ -303,10 +304,10 @@ const LoginPage: React.FC = () => {
                     className="w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50"
                   >
                     {isLoading
-                      ? "Processing..."
+                      ? t('login.processing')
                       : isLogin
-                      ? "Sign In"
-                      : "Create Account"}
+                      ? t('login.signIn')
+                      : t('login.createAccount')}
                   </button>
                 </form>
 
@@ -316,8 +317,8 @@ const LoginPage: React.FC = () => {
                     className="text-sm text-primary-600 hover:text-primary-700 font-medium"
                   >
                     {isLogin
-                      ? "Don't have an account? Sign up"
-                      : "Already have an account? Sign in"}
+                      ? t('login.dontHaveAccount')
+                      : t('login.alreadyHaveAccount')}
                   </button>
                 </div>
               </>
@@ -325,21 +326,21 @@ const LoginPage: React.FC = () => {
               // Staff Login Form
               <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {t('login.emailAddress')}
                   </label>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
+                  <label className="block text-sm font-medium text-foreground mb-1">
+                    {t('login.password')}
                   </label>
                   <div className="relative">
                     <input
@@ -347,14 +348,14 @@ const LoginPage: React.FC = () => {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none pr-10"
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none pr-10"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
                     >
-                      {showPassword ? "Hide" : "Show"}
+                      {showPassword ? t('login.hide') : t('login.show')}
                     </button>
                   </div>
                 </div>
@@ -364,15 +365,14 @@ const LoginPage: React.FC = () => {
                   disabled={isLoading}
                   className="w-full py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-medium rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50"
                 >
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoading ? t('login.signingIn') : t('login.signIn')}
                 </button>
 
                 <div className="mt-4 text-center">
-                  <p className="text-xs text-gray-500">
-                    Staff credentials are provided by your administrator.
+                  <p className="text-xs text-muted-foreground">
+                    {t('login.staffCredentialsNote')}
                     <br />
-                    You can also link your Google account after your first
-                    login.
+                    {t('login.googleLinkNote')}
                   </p>
                 </div>
               </form>

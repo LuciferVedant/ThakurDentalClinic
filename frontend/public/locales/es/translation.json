@@ -1,0 +1,97 @@
+{
+  "navbar": {
+    "home": "Inicio",
+    "about": "Sobre Nosotros",
+    "blogs": "Blog",
+    "contact": "Contacto",
+    "signIn": "Iniciar Sesión"
+  },
+  "contact": {
+    "title": "Ponte en Contacto",
+    "subtitle": "Estamos aquí para ayudarte y responder cualquier pregunta que tengas.",
+    "visitUs": "Visítanos",
+    "callUs": "Llámanos",
+    "emailUs": "Envíanos un Email",
+    "businessHours": "Horario de Atención",
+    "formTitle": "Envíanos un Mensaje",
+    "fullName": "Nombre Completo",
+    "email": "Correo Electrónico",
+    "phone": "Número de Teléfono",
+    "subject": "Asunto",
+    "message": "Tu Mensaje",
+    "sendMessage": "Enviar Mensaje",
+    "sending": "Enviando...",
+    "sent": "¡Mensaje Enviado!",
+    "failed": "Error al enviar el mensaje. Inténtalo de nuevo.",
+    "address": "Clínica Dental Thakur, Frente al Banco Central de India, Abhanpur, Raipur, Chhattisgarh 493661",
+    "hours": "Lun - Sáb: 10:00 AM - 8:00 PM",
+    "phoneNumber": "+91 98765 43210",
+    "emailAddress": "info@thakurdental.com"
+  },
+  "about": {
+    "title": "Sobre Nosotros",
+    "welcome": "Bienvenido a la Clínica Dental Thakur, donde tu sonrisa es nuestra máxima prioridad. Establecida en 2010, hemos estado sirviendo a la comunidad con dedicación y excelencia en el cuidado dental.",
+    "mission": "Nuestra misión es proporcionar servicios dentales completos en un ambiente cómodo e higiénico. Creemos en un enfoque centrado en el paciente, asegurando que cada individuo reciba atención personalizada adaptada a sus necesidades específicas.",
+    "teamTitle": "Nuestro Equipo",
+    "teamDescription": "Estamos orgullosos de tener un equipo de dentistas altamente calificados y experimentados que son expertos en varios campos de la odontología, incluyendo ortodoncia, endodoncia, periodoncia y odontología cosmética.",
+    "facilitiesTitle": "Nuestras Instalaciones",
+    "facilitiesDescription": "Nuestra clínica está equipada con tecnología de última generación, incluyendo rayos X digitales, cámaras intraorales y sistemas de esterilización avanzados. Seguimos estrictos protocolos de control de infecciones."
+  },
+  "landing": {
+    "heroTitle1": "Tu Sonrisa,",
+    "heroTitle2": "Nuestra Pasión",
+    "heroSubtitle": "Experimenta atención dental de clase mundial con tecnología de última generación y un equipo de profesionales dedicados a tu salud bucal.",
+    "bookAppointment": "Reservar Cita",
+    "contactUs": "Contáctanos",
+    "whyChooseUs": "Por Qué Elegirnos",
+    "comprehensiveCare": "Atención Dental Integral",
+    "features": {
+      "expertDoctors": {
+        "title": "Doctores Expertos",
+        "description": "Nuestro equipo está formado por profesionales dentales altamente calificados y experimentados."
+      },
+      "modernTechnology": {
+        "title": "Tecnología Moderna",
+        "description": "Utilizamos los últimos equipos y tecnología dental para tratamientos precisos."
+      },
+      "comfortableEnvironment": {
+        "title": "Ambiente Confortable",
+        "description": "Una atmósfera relajante e higiénica para hacer tu visita agradable."
+      }
+    }
+  },
+  "blog": {
+    "title": "Consejos de Salud y Noticias",
+    "subtitle": "Mantente actualizado con lo último en cuidado dental.",
+    "loading": "Cargando...",
+    "category": "Cuidado Dental"
+  },
+  "login": {
+    "clinicName": "Clínica Dental Thakur",
+    "signInToAccount": "Inicia sesión en tu cuenta",
+    "createNewAccount": "Crear una cuenta nueva",
+    "staffPortalAccess": "Acceso al Portal de Personal",
+    "patientPortal": "Portal de Pacientes",
+    "staffPortal": "Portal de Personal",
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "orContinueWithEmail": "O continuar con email",
+    "orSignInWithCredentials": "O iniciar sesión con credenciales",
+    "firstName": "Nombre",
+    "lastName": "Apellido",
+    "phoneNumber": "Número de Teléfono",
+    "emailAddress": "Correo Electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "processing": "Procesando...",
+    "signIn": "Iniciar Sesión",
+    "signingIn": "Iniciando sesión...",
+    "createAccount": "Crear Cuenta",
+    "dontHaveAccount": "¿No tienes cuenta? Regístrate",
+    "alreadyHaveAccount": "¿Ya tienes cuenta? Inicia sesión",
+    "passwordsDontMatch": "Las contraseñas no coinciden",
+    "staffCredentialsNote": "Las credenciales del personal son proporcionadas por tu administrador.",
+    "googleLinkNote": "También puedes vincular tu cuenta de Google después de tu primer inicio de sesión."
+  }
+}

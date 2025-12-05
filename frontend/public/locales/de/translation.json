@@ -1,0 +1,97 @@
+{
+  "navbar": {
+    "home": "Startseite",
+    "about": "Über Uns",
+    "blogs": "Blog",
+    "contact": "Kontakt",
+    "signIn": "Anmelden"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie Uns",
+    "subtitle": "Wir sind hier, um Ihnen zu helfen und alle Ihre Fragen zu beantworten.",
+    "visitUs": "Besuchen Sie Uns",
+    "callUs": "Rufen Sie Uns An",
+    "emailUs": "Schreiben Sie Uns",
+    "businessHours": "Öffnungszeiten",
+    "formTitle": "Senden Sie uns eine Nachricht",
+    "fullName": "Vollständiger Name",
+    "email": "E-Mail-Adresse",
+    "phone": "Telefonnummer",
+    "subject": "Betreff",
+    "message": "Ihre Nachricht",
+    "sendMessage": "Nachricht Senden",
+    "sending": "Senden...",
+    "sent": "Nachricht Gesendet!",
+    "failed": "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    "address": "Thakur Zahnklinik, Gegenüber der Zentralbank von Indien, Abhanpur, Raipur, Chhattisgarh 493661",
+    "hours": "Mo - Sa: 10:00 - 20:00 Uhr",
+    "phoneNumber": "+91 98765 43210",
+    "emailAddress": "info@thakurdental.com"
+  },
+  "about": {
+    "title": "Über Uns",
+    "welcome": "Willkommen in der Thakur Zahnklinik, wo Ihr Lächeln unsere oberste Priorität ist. Gegründet 2010, dienen wir der Gemeinschaft mit Hingabe und Exzellenz in der Zahnpflege.",
+    "mission": "Unsere Mission ist es, umfassende Zahnpflegedienstleistungen in einer komfortablen und hygienischen Umgebung anzubieten. Wir glauben an einen patientenzentrierten Ansatz, der sicherstellt, dass jeder Einzelne eine personalisierte Betreuung erhält.",
+    "teamTitle": "Unser Team",
+    "teamDescription": "Wir sind stolz auf unser Team hochqualifizierter und erfahrener Zahnärzte, die Experten in verschiedenen Bereichen der Zahnmedizin sind, einschließlich Kieferorthopädie, Endodontie, Parodontologie und kosmetischer Zahnmedizin.",
+    "facilitiesTitle": "Unsere Einrichtungen",
+    "facilitiesDescription": "Unsere Klinik ist mit modernster Technologie ausgestattet, darunter digitale Röntgengeräte, intraorale Kameras und fortschrittliche Sterilisationssysteme. Wir halten strenge Infektionskontrollprotokolle ein."
+  },
+  "landing": {
+    "heroTitle1": "Ihr Lächeln,",
+    "heroTitle2": "Unsere Leidenschaft",
+    "heroSubtitle": "Erleben Sie erstklassige Zahnpflege mit modernster Technologie und einem Team engagierter Fachleute für Ihre Mundgesundheit.",
+    "bookAppointment": "Termin Buchen",
+    "contactUs": "Kontaktieren Sie Uns",
+    "whyChooseUs": "Warum Uns Wählen",
+    "comprehensiveCare": "Umfassende Zahnpflege",
+    "features": {
+      "expertDoctors": {
+        "title": "Erfahrene Ärzte",
+        "description": "Unser Team besteht aus hochqualifizierten und erfahrenen Zahnärzten."
+      },
+      "modernTechnology": {
+        "title": "Moderne Technologie",
+        "description": "Wir verwenden die neuesten Geräte und Technologien für präzise Behandlungen."
+      },
+      "comfortableEnvironment": {
+        "title": "Komfortable Umgebung",
+        "description": "Eine entspannende und hygienische Atmosphäre für einen angenehmen Besuch."
+      }
+    }
+  },
+  "blog": {
+    "title": "Gesundheitstipps & Neuigkeiten",
+    "subtitle": "Bleiben Sie über die neuesten Entwicklungen in der Zahnpflege informiert.",
+    "loading": "Laden...",
+    "category": "Zahnpflege"
+  },
+  "login": {
+    "clinicName": "Thakur Zahnklinik",
+    "signInToAccount": "In Ihr Konto einloggen",
+    "createNewAccount": "Neues Konto erstellen",
+    "staffPortalAccess": "Mitarbeiterportal-Zugang",
+    "patientPortal": "Patientenportal",
+    "staffPortal": "Mitarbeiterportal",
+    "signInWithGoogle": "Mit Google anmelden",
+    "orContinueWithEmail": "Oder mit E-Mail fortfahren",
+    "orSignInWithCredentials": "Oder mit Anmeldedaten einloggen",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "phoneNumber": "Telefonnummer",
+    "emailAddress": "E-Mail-Adresse",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "show": "Anzeigen",
+    "hide": "Ausblenden",
+    "processing": "Verarbeitung...",
+    "signIn": "Anmelden",
+    "signingIn": "Anmeldung...",
+    "createAccount": "Konto Erstellen",
+    "dontHaveAccount": "Kein Konto? Registrieren",
+    "alreadyHaveAccount": "Bereits ein Konto? Einloggen",
+    "passwordsDontMatch": "Passwörter stimmen nicht überein",
+    "staffCredentialsNote": "Mitarbeiter-Anmeldedaten werden von Ihrem Administrator bereitgestellt.",
+    "googleLinkNote": "Sie können Ihr Google-Konto auch nach Ihrer ersten Anmeldung verknüpfen."
+  }
+}

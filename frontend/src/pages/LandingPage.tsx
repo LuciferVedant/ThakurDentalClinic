@@ -5,8 +5,29 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Smile } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 const LandingPage: React.FC = () => {
+  const { t } = useTranslation();
+  
+  const features = [
+    {
+      titleKey: 'landing.features.expertDoctors.title',
+      descriptionKey: 'landing.features.expertDoctors.description',
+      icon: <ShieldCheck className="h-10 w-10 text-primary" />,
+    },
+    {
+      titleKey: 'landing.features.modernTechnology.title',
+      descriptionKey: 'landing.features.modernTechnology.description',
+      icon: <CheckCircle2 className="h-10 w-10 text-primary" />,
+    },
+    {
+      titleKey: 'landing.features.comfortableEnvironment.title',
+      descriptionKey: 'landing.features.comfortableEnvironment.description',
+      icon: <Smile className="h-10 w-10 text-primary" />,
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background font-sans">
       <Navbar />
@@ -22,13 +43,13 @@ const LandingPage: React.FC = () => {
               transition={{ duration: 0.5 }}
             >
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-foreground mb-6">
-                Your Smile, <br />
+                {t('landing.heroTitle1')} <br />
                 <span className="bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-                  Our Passion
+                  {t('landing.heroTitle2')}
                 </span>
               </h1>
               <p className="mt-6 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Experience world-class dental care with state-of-the-art technology and a team of dedicated professionals committed to your oral health.
+                {t('landing.heroSubtitle')}
               </p>
             </motion.div>
 
@@ -40,12 +61,12 @@ const LandingPage: React.FC = () => {
             >
               <Link to="/login">
                 <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 rounded-full bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
-                  Book Appointment <ArrowRight className="ml-2 h-5 w-5" />
+                  {t('landing.bookAppointment')} <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link to="/contact">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto text-lg px-8 py-6 rounded-full border-2 hover:bg-secondary-50 transition-all">
-                  Contact Us
+                  {t('landing.contactUs')}
                 </Button>
               </Link>
             </motion.div>
@@ -57,32 +78,16 @@ const LandingPage: React.FC = () => {
       <div className="py-24 bg-secondary/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-primary font-semibold tracking-wide uppercase text-sm">Why Choose Us</h2>
+            <h2 className="text-primary font-semibold tracking-wide uppercase text-sm">{t('landing.whyChooseUs')}</h2>
             <p className="mt-2 text-3xl md:text-4xl font-bold text-foreground">
-              Comprehensive Dental Care
+              {t('landing.comprehensiveCare')}
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: 'Expert Doctors',
-                description: 'Our team consists of highly qualified and experienced dental professionals.',
-                icon: <ShieldCheck className="h-10 w-10 text-primary" />,
-              },
-              {
-                title: 'Modern Technology',
-                description: 'We use the latest dental equipment and technology for precise treatments.',
-                icon: <CheckCircle2 className="h-10 w-10 text-primary" />,
-              },
-              {
-                title: 'Comfortable Environment',
-                description: 'A relaxing and hygienic atmosphere to make your visit pleasant.',
-                icon: <Smile className="h-10 w-10 text-primary" />,
-              },
-            ].map((feature, index) => (
+            {features.map((feature, index) => (
               <motion.div
-                key={feature.title}
+                key={feature.titleKey}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -93,11 +98,11 @@ const LandingPage: React.FC = () => {
                     <div className="mb-4 inline-flex items-center justify-center p-3 bg-primary/10 rounded-xl w-fit">
                       {feature.icon}
                     </div>
-                    <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-bold">{t(feature.titleKey)}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground leading-relaxed">
-                      {feature.description}
+                      {t(feature.descriptionKey)}
                     </p>
                   </CardContent>
                 </Card>

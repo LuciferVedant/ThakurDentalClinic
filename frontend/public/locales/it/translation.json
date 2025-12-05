@@ -1,0 +1,97 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "Chi Siamo",
+    "blogs": "Blog",
+    "contact": "Contatti",
+    "signIn": "Accedi"
+  },
+  "contact": {
+    "title": "Contattaci",
+    "subtitle": "Siamo qui per aiutarti e rispondere a qualsiasi domanda tu possa avere.",
+    "visitUs": "Vieni a Trovarci",
+    "callUs": "Chiamaci",
+    "emailUs": "Inviaci un'Email",
+    "businessHours": "Orari di Apertura",
+    "formTitle": "Inviaci un Messaggio",
+    "fullName": "Nome Completo",
+    "email": "Indirizzo Email",
+    "phone": "Numero di Telefono",
+    "subject": "Oggetto",
+    "message": "Il Tuo Messaggio",
+    "sendMessage": "Invia Messaggio",
+    "sending": "Invio in corso...",
+    "sent": "Messaggio Inviato!",
+    "failed": "Impossibile inviare il messaggio. Riprova.",
+    "address": "Clinica Dentale Thakur, Di fronte alla Banca Centrale dell'India, Abhanpur, Raipur, Chhattisgarh 493661",
+    "hours": "Lun - Sab: 10:00 - 20:00",
+    "phoneNumber": "+91 98765 43210",
+    "emailAddress": "info@thakurdental.com"
+  },
+  "about": {
+    "title": "Chi Siamo",
+    "welcome": "Benvenuto alla Clinica Dentale Thakur, dove il tuo sorriso è la nostra massima priorità. Fondata nel 2010, serviamo la comunità con dedizione ed eccellenza nelle cure dentali.",
+    "mission": "La nostra missione è fornire servizi dentali completi in un ambiente confortevole e igienico. Crediamo in un approccio centrato sul paziente, garantendo cure personalizzate adattate alle specifiche esigenze di ogni individuo.",
+    "teamTitle": "Il Nostro Team",
+    "teamDescription": "Siamo orgogliosi di avere un team di dentisti altamente qualificati ed esperti in vari campi dell'odontoiatria, tra cui ortodonzia, endodonzia, parodontologia e odontoiatria estetica.",
+    "facilitiesTitle": "Le Nostre Strutture",
+    "facilitiesDescription": "La nostra clinica è dotata di tecnologie all'avanguardia, tra cui radiografie digitali, telecamere intraorali e sistemi di sterilizzazione avanzati. Seguiamo rigorosi protocolli di controllo delle infezioni."
+  },
+  "landing": {
+    "heroTitle1": "Il Tuo Sorriso,",
+    "heroTitle2": "La Nostra Passione",
+    "heroSubtitle": "Scopri cure dentali di livello mondiale con tecnologie all'avanguardia e un team di professionisti dedicati alla tua salute orale.",
+    "bookAppointment": "Prenota Appuntamento",
+    "contactUs": "Contattaci",
+    "whyChooseUs": "Perché Sceglierci",
+    "comprehensiveCare": "Cure Dentali Complete",
+    "features": {
+      "expertDoctors": {
+        "title": "Medici Esperti",
+        "description": "Il nostro team è composto da professionisti dentali altamente qualificati e con esperienza."
+      },
+      "modernTechnology": {
+        "title": "Tecnologia Moderna",
+        "description": "Utilizziamo le più recenti attrezzature e tecnologie dentali per trattamenti precisi."
+      },
+      "comfortableEnvironment": {
+        "title": "Ambiente Confortevole",
+        "description": "Un'atmosfera rilassante e igienica per rendere piacevole la tua visita."
+      }
+    }
+  },
+  "blog": {
+    "title": "Consigli sulla Salute e Notizie",
+    "subtitle": "Rimani aggiornato sulle ultime novità nelle cure dentali.",
+    "loading": "Caricamento...",
+    "category": "Cure Dentali"
+  },
+  "login": {
+    "clinicName": "Clinica Dentale Thakur",
+    "signInToAccount": "Accedi al tuo account",
+    "createNewAccount": "Crea un nuovo account",
+    "staffPortalAccess": "Accesso Portale Personale",
+    "patientPortal": "Portale Pazienti",
+    "staffPortal": "Portale Personale",
+    "signInWithGoogle": "Accedi con Google",
+    "orContinueWithEmail": "O continua con email",
+    "orSignInWithCredentials": "O accedi con credenziali",
+    "firstName": "Nome",
+    "lastName": "Cognome",
+    "phoneNumber": "Numero di Telefono",
+    "emailAddress": "Indirizzo Email",
+    "password": "Password",
+    "confirmPassword": "Conferma Password",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "processing": "Elaborazione...",
+    "signIn": "Accedi",
+    "signingIn": "Accesso in corso...",
+    "createAccount": "Crea Account",
+    "dontHaveAccount": "Non hai un account? Registrati",
+    "alreadyHaveAccount": "Hai già un account? Accedi",
+    "passwordsDontMatch": "Le password non corrispondono",
+    "staffCredentialsNote": "Le credenziali del personale sono fornite dal tuo amministratore.",
+    "googleLinkNote": "Puoi anche collegare il tuo account Google dopo il primo accesso."
+  }
+}

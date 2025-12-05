@@ -25,22 +25,31 @@ func main() {
 	}
 
 	// Auto-migrate models
-	if err := db.AutoMigrate(&models.User{}, &models.OAuthAccount{}, &models.BlogPost{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.OAuthAccount{}, &models.BlogPost{}, &models.ChatSession{}, &models.ChatMessage{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
 	// Initialize repositories
 	userRepo := repository.NewUserRepository(db)
 	blogRepo := repository.NewBlogRepository(db)
+	chatRepo := repository.NewChatRepository(db)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, cfg)
 	blogService := services.NewBlogService(blogRepo, userRepo)
+	chatService, err := services.NewChatService(chatRepo)
+	if err != nil {
+		log.Printf("Warning: Failed to initialize ChatService (check GEMINI_API_KEY): %v", err)
+	}
 
 	// Initialize handlers
 	authHandler := handlers.NewAuthHandler(authService)
 	userHandler := handlers.NewUserHandler(userRepo, authService)
 	blogHandler := handlers.NewBlogHandler(blogService)
+	var chatHandler *handlers.ChatHandler
+	if chatService != nil {
+		chatHandler = handlers.NewChatHandler(chatService)
+	}
 
 	// Setup Gin router
 	router := gin.Default()
@@ -71,6 +80,17 @@ func main() {
 		{
 			blogs.GET("", blogHandler.GetAllBlogPosts)
 			blogs.GET("/:id", blogHandler.GetBlogPost)
+		}
+
+		// Chat Routes
+		if chatHandler != nil {
+			chat := api.Group("/chat")
+			chat.Use(middleware.OptionalAuthMiddleware(cfg))
+			{
+				chat.POST("", chatHandler.HandleChat)
+				chat.GET("/history", middleware.AuthMiddleware(cfg), chatHandler.GetHistory)
+				chat.GET("/session/:sessionId", middleware.AuthMiddleware(cfg), chatHandler.GetSessionMessages)
+			}
 		}
 
 		// Protected routes

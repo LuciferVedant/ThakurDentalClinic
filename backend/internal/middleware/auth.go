@@ -47,6 +47,36 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
+// OptionalAuthMiddleware attempts to validate JWT tokens but proceeds if missing or invalid
+func OptionalAuthMiddleware(cfg *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.Next()
+			return
+		}
+
+		// Extract token from "Bearer <token>"
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			c.Next()
+			return
+		}
+
+		token := parts[1]
+		claims, err := utils.ValidateJWT(token, cfg.JWTSecret)
+		if err == nil {
+			// Set user info in context if valid
+			c.Set("userID", claims.UserID)
+			c.Set("email", claims.Email)
+			c.Set("userType", claims.UserType)
+			c.Set("isAdmin", claims.IsAdmin)
+		}
+
+		c.Next()
+	}
+}
+
 // RequireAdmin middleware ensures the user is an admin doctor
 func RequireAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {

@@ -15,6 +15,8 @@ import ContactPage from './pages/ContactPage';
 import BlogListPage from './pages/BlogListPage';
 import BlogDetailPage from './pages/BlogDetailPage';
 
+import ChatWidget from './components/ChatWidget';
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 const App: React.FC = () => {
@@ -50,6 +52,7 @@ const App: React.FC = () => {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <ChatWidget />
       </Router>
     </GoogleOAuthProvider>
   );

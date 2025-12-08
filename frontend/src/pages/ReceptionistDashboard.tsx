@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
+import AppointmentList from '../components/appointments/AppointmentList';
+import ProfileCard from '../components/profile/ProfileCard';
 
 const ReceptionistDashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -14,6 +16,11 @@ const ReceptionistDashboard: React.FC = () => {
             Welcome, {user?.firstName}!
           </h2>
           <p className="text-gray-600">Manage appointments and patient check-ins</p>
+        </div>
+
+        {/* Profile Section */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100">
+             <ProfileCard />
         </div>
 
         {/* Quick Stats */}
@@ -95,16 +102,10 @@ const ReceptionistDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Today's Appointments */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Today's Appointments</h3>
-          <div className="text-center py-12 text-gray-500">
-            <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p>No appointments scheduled</p>
-          </div>
-        </div>
+        {/* Appointments Management */}
+        <section id="appointments">
+          <AppointmentList />
+        </section>
       </div>
     </Layout>
   );

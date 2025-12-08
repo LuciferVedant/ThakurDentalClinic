@@ -59,3 +59,15 @@ export const getSessionMessages = async (
   );
   return response.data;
 };
+
+export const deleteHistory = async (): Promise<void> => {
+  await axios.delete(`${API_URL}/chat/history`, {
+    headers: getAuthHeader(),
+  });
+};
+
+export const deleteSession = async (sessionId: string): Promise<void> => {
+  await axios.delete(`${API_URL}/chat/session/${sessionId}`, {
+    headers: getAuthHeader(),
+  });
+};

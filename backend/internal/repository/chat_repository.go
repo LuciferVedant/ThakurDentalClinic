@@ -53,3 +53,30 @@ func (r *ChatRepository) GetHistory(userID uuid.UUID) ([]models.ChatSession, err
 	}
 	return sessions, nil
 }
+
+func (r *ChatRepository) DeleteHistory(userID uuid.UUID) error {
+	// First, get all session IDs for this user
+	var sessions []models.ChatSession
+	if err := r.db.Where("user_id = ?", userID).Find(&sessions).Error; err != nil {
+		return err
+	}
+
+	// Delete messages for all sessions first (to avoid FK constraint)
+	for _, session := range sessions {
+		if err := r.db.Where("session_id = ?", session.ID).Delete(&models.ChatMessage{}).Error; err != nil {
+			return err
+		}
+	}
+
+	// Now delete the sessions
+	return r.db.Where("user_id = ?", userID).Delete(&models.ChatSession{}).Error
+}
+
+func (r *ChatRepository) DeleteSession(sessionID uuid.UUID) error {
+	// Delete messages first
+	if err := r.db.Where("session_id = ?", sessionID).Delete(&models.ChatMessage{}).Error; err != nil {
+		return err
+	}
+	// Then delete the session
+	return r.db.Where("id = ?", sessionID).Delete(&models.ChatSession{}).Error
+}

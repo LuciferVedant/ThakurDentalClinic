@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
+import AppointmentList from '../components/appointments/AppointmentList';
+import ProfileCard from '../components/profile/ProfileCard';
 
 const DoctorDashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -10,15 +12,25 @@ const DoctorDashboard: React.FC = () => {
       <div className="space-y-6">
         {/* Welcome Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
-            Dr. {user?.firstName} {user?.lastName}
-          </h2>
-          <p className="text-gray-600">Manage your patients and appointments</p>
-          {user?.isAdmin && (
-            <span className="inline-block mt-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-semibold rounded-full">
-              Administrator
-            </span>
-          )}
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+                Dr. {user?.firstName} {user?.lastName}
+              </h2>
+              <p className="text-gray-600">Manage your patients and appointments</p>
+              {user?.isAdmin && (
+                <span className="inline-block mt-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-semibold rounded-full">
+                  Administrator
+                </span>
+              )}
+            </div>
+            {/* Optional: Add Profile Edit Button or Profile Card here or below */}
+          </div>
+        </div>
+        
+        {/* Profile Section */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100">
+             <ProfileCard />
         </div>
 
         {/* Quick Stats */}
@@ -80,16 +92,10 @@ const DoctorDashboard: React.FC = () => {
           </div>
         </div>
 
-        {/* Today's Schedule */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Today's Schedule</h3>
-          <div className="text-center py-12 text-gray-500">
-            <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <p>No appointments scheduled for today</p>
-          </div>
-        </div>
+        {/* Appointments */}
+        <section id="appointments">
+          <AppointmentList />
+        </section>
       </div>
     </Layout>
   );

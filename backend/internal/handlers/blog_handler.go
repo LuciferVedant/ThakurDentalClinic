@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"thakur-dental-clinic/backend/internal/services"
 
@@ -18,9 +19,9 @@ func NewBlogHandler(blogService *services.BlogService) *BlogHandler {
 
 func (h *BlogHandler) CreateBlogPost(c *gin.Context) {
 	var req struct {
-		Title    string `json:"title" binding:"required"`
-		Content  string `json:"content" binding:"required"`
-		ImageURL string `json:"imageUrl"`
+		Title     string   `json:"title" binding:"required"`
+		Content   string   `json:"content" binding:"required"`
+		ImageURLs []string `json:"imageUrls"` // Changed to array
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -34,7 +35,14 @@ func (h *BlogHandler) CreateBlogPost(c *gin.Context) {
 		return
 	}
 
-	post, err := h.blogService.CreateBlogPost(userID.(uuid.UUID), req.Title, req.Content, req.ImageURL)
+	// Marshal URLs to JSON
+	urlsJson, err := json.Marshal(req.ImageURLs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image URLs"})
+		return
+	}
+
+	post, err := h.blogService.CreateBlogPost(userID.(uuid.UUID), req.Title, req.Content, string(urlsJson))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -79,9 +87,9 @@ func (h *BlogHandler) UpdateBlogPost(c *gin.Context) {
 	}
 
 	var req struct {
-		Title    string `json:"title" binding:"required"`
-		Content  string `json:"content" binding:"required"`
-		ImageURL string `json:"imageUrl"`
+		Title     string   `json:"title" binding:"required"`
+		Content   string   `json:"content" binding:"required"`
+		ImageURLs []string `json:"imageUrls"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -95,7 +103,14 @@ func (h *BlogHandler) UpdateBlogPost(c *gin.Context) {
 		return
 	}
 
-	post, err := h.blogService.UpdateBlogPost(id, userID.(uuid.UUID), req.Title, req.Content, req.ImageURL)
+	// Marshal URLs to JSON
+	urlsJson, err := json.Marshal(req.ImageURLs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image URLs"})
+		return
+	}
+
+	post, err := h.blogService.UpdateBlogPost(id, userID.(uuid.UUID), req.Title, req.Content, string(urlsJson))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -116,10 +116,14 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 
 // UpdateUserRequest represents the request to update a user
 type UpdateUserRequest struct {
-	FirstName *string `json:"firstName"`
-	LastName  *string `json:"lastName"`
-	Phone     *string `json:"phone"`
-	IsActive  *bool   `json:"isActive"`
+	FirstName      *string `json:"firstName"`
+	LastName       *string `json:"lastName"`
+	Age            *int    `json:"age"`
+	Gender         *string `json:"gender"`
+	Address        *string `json:"address"`
+	ProfilePicture *string `json:"profilePicture"`
+	Phone          *string `json:"phone"`
+	IsActive       *bool   `json:"isActive"`
 }
 
 // UpdateUser updates a user's information
@@ -128,6 +132,22 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
+		return
+	}
+
+	// Authorization check
+	currentUserID, exists := middleware.GetUserID(c)
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	isAdmin := middleware.GetIsAdmin(c)
+
+	// DEBUG LOG
+	// log.Printf("UpdateUser Debug: CurrentUserID=%v, TargetID=%v, IsAdmin=%v", currentUserID, id, isAdmin)
+
+	if !isAdmin && currentUserID != id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You can only update your own profile"})
 		return
 	}
 
@@ -149,6 +169,18 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	}
 	if req.LastName != nil {
 		user.LastName = *req.LastName
+	}
+	if req.Age != nil {
+		user.Age = *req.Age
+	}
+	if req.Gender != nil {
+		user.Gender = *req.Gender
+	}
+	if req.Address != nil {
+		user.Address = *req.Address
+	}
+	if req.ProfilePicture != nil {
+		user.ProfilePicture = *req.ProfilePicture
 	}
 	if req.Phone != nil {
 		user.Phone = *req.Phone

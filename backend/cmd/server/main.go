@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"thakur-dental-clinic/backend/internal/config"
 	"thakur-dental-clinic/backend/internal/handlers"
 	"thakur-dental-clinic/backend/internal/middleware"
@@ -25,7 +26,7 @@ func main() {
 	}
 
 	// Auto-migrate models
-	if err := db.AutoMigrate(&models.User{}, &models.OAuthAccount{}, &models.BlogPost{}, &models.ChatSession{}, &models.ChatMessage{}); err != nil {
+	if err := db.AutoMigrate(&models.User{}, &models.OAuthAccount{}, &models.BlogPost{}, &models.ChatSession{}, &models.ChatMessage{}, &models.Appointment{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
@@ -33,10 +34,12 @@ func main() {
 	userRepo := repository.NewUserRepository(db)
 	blogRepo := repository.NewBlogRepository(db)
 	chatRepo := repository.NewChatRepository(db)
+	appointmentRepo := repository.NewAppointmentRepository(db)
 
 	// Initialize services
 	authService := services.NewAuthService(userRepo, cfg)
 	blogService := services.NewBlogService(blogRepo, userRepo)
+	appointmentService := services.NewAppointmentService(appointmentRepo, userRepo)
 	chatService, err := services.NewChatService(chatRepo)
 	if err != nil {
 		log.Printf("Warning: Failed to initialize ChatService (check GEMINI_API_KEY): %v", err)
@@ -46,6 +49,8 @@ func main() {
 	authHandler := handlers.NewAuthHandler(authService)
 	userHandler := handlers.NewUserHandler(userRepo, authService)
 	blogHandler := handlers.NewBlogHandler(blogService)
+	appointmentHandler := handlers.NewAppointmentHandler(appointmentService)
+	uploadHandler := handlers.NewUploadHandler()
 	var chatHandler *handlers.ChatHandler
 	if chatService != nil {
 		chatHandler = handlers.NewChatHandler(chatService)
@@ -53,6 +58,9 @@ func main() {
 
 	// Setup Gin router
 	router := gin.Default()
+
+	// Static files for uploads
+	router.Static("/uploads", "./uploads")
 
 	// CORS middleware
 	router.Use(cors.New(cors.Config{
@@ -83,14 +91,24 @@ func main() {
 		}
 
 		// Chat Routes
+		chat := api.Group("/chat")
 		if chatHandler != nil {
-			chat := api.Group("/chat")
 			chat.Use(middleware.OptionalAuthMiddleware(cfg))
 			{
 				chat.POST("", chatHandler.HandleChat)
 				chat.GET("/history", middleware.AuthMiddleware(cfg), chatHandler.GetHistory)
+				chat.DELETE("/history", middleware.AuthMiddleware(cfg), chatHandler.DeleteHistory)
 				chat.GET("/session/:sessionId", middleware.AuthMiddleware(cfg), chatHandler.GetSessionMessages)
+				chat.DELETE("/session/:sessionId", middleware.AuthMiddleware(cfg), chatHandler.DeleteSession)
 			}
+		} else {
+			// Fallback routes to explain why chat is missing
+			chat.Any("", func(c *gin.Context) {
+				c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Chat service unavailable. Check server logs for initialization errors (likely missing GEMINI_API_KEY)."})
+			})
+			chat.Any("/*any", func(c *gin.Context) {
+				c.JSON(http.StatusServiceUnavailable, gin.H{"error": "Chat service unavailable. Check server logs for initialization errors (likely missing GEMINI_API_KEY)."})
+			})
 		}
 
 		// Protected routes
@@ -98,6 +116,24 @@ func main() {
 		protected.Use(middleware.AuthMiddleware(cfg))
 		{
 			protected.GET("/auth/me", authHandler.GetMe)
+			protected.POST("/upload", uploadHandler.UploadFile)
+
+			// Appointment Routes
+			appointments := protected.Group("/appointments")
+			{
+				appointments.GET("", appointmentHandler.List)
+				appointments.GET("/:id/prescription", func(c *gin.Context) {
+					// TODO: Implement simple get if needed or just use GetAppointment
+				})
+				// Patients normally just View, but logic is in List
+
+				// Doctor/Receptionist routes logic handled in handler or via simplified generic endpoints for now
+				appointments.POST("", appointmentHandler.Create) // Admin/Doctor usually
+				appointments.PUT("/:id/prescription", appointmentHandler.UploadPrescription)
+			}
+
+			// Protected User Routes (Self-update allowed)
+			protected.PUT("/users/:id", userHandler.UpdateUser)
 
 			// Admin-only routes
 			admin := protected.Group("")
@@ -106,7 +142,6 @@ func main() {
 				admin.POST("/users/staff", userHandler.CreateStaff)
 				admin.GET("/users", userHandler.ListUsers)
 				admin.GET("/users/:id", userHandler.GetUser)
-				admin.PUT("/users/:id", userHandler.UpdateUser)
 				admin.PUT("/users/:id/deactivate", userHandler.DeactivateUser)
 
 				// Admin Blog Routes

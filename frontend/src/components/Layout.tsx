@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
+import LanguageSwitcher from './LanguageSwitcher';
+import ThemeSwitcher from './ThemeSwitcher';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -36,6 +38,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             
             {isAuthenticated && user && (
               <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-2 mr-2">
+                  <ThemeSwitcher />
+                  <LanguageSwitcher />
+                </div>
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-gray-900">
                     {user.firstName} {user.lastName}
@@ -65,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <footer className="bg-white/60 backdrop-blur-sm mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-gray-500">
-            © 2024 Thakur Dental Clinic. All rights reserved.
+            © 2025 Thakur Dental Clinic. All rights reserved.
           </p>
         </div>
       </footer>

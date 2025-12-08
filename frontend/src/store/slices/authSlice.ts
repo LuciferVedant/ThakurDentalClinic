@@ -11,6 +11,11 @@ export interface User {
   userType: 'patient' | 'doctor' | 'receptionist';
   isAdmin: boolean;
   isActive: boolean;
+  age?: number;
+  gender?: string;
+  address?: string;
+  profilePicture?: string;
+  phone?: string;
 }
 
 interface AuthState {
@@ -79,6 +84,23 @@ export const fetchCurrentUser = createAsyncThunk(
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch user');
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (userData: Partial<User>, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as { auth: AuthState };
+      const response = await axios.put(`${API_URL}/users/${state.auth.user?.id}`, userData, {
+        headers: {
+          Authorization: `Bearer ${state.auth.token}`,
+        },
+      });
+      return response.data.user;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to update profile');
     }
   }
 );
@@ -172,6 +194,16 @@ const authSlice = createSlice({
         state.token = null;
         localStorage.removeItem('user');
         localStorage.removeItem('token');
+        localStorage.removeItem('token');
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload;
+        localStorage.setItem('user', JSON.stringify(action.payload));
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       });
   },
 });

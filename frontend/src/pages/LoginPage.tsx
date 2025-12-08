@@ -9,6 +9,7 @@ import {
   clearError,
 } from "../store/slices/authSlice";
 import { useTranslation } from 'react-i18next';
+import Navbar from "../components/Navbar";
 
 const LoginPage: React.FC = () => {
   const { t } = useTranslation();
@@ -89,7 +90,9 @@ const LoginPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-4 py-12">
+    <>
+      <Navbar />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-background to-secondary/10 px-4 py-12 pt-20">
       <div className="max-w-md w-full">
         {/* Logo and Title */}
         <div className="text-center mb-8">
@@ -381,6 +384,7 @@ const LoginPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

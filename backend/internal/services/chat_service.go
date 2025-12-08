@@ -33,8 +33,9 @@ func NewChatService(repo *repository.ChatRepository) (*ChatService, error) {
 	}
 	log.Printf("Successfully created GenAI client.")
 
-	// Using gemini-2.0-flash as it is available in the model list
-	model := client.GenerativeModel("gemini-2.0-flash")
+	// Using gemini-2.0-flash-exp as requested (Flash 2.0 experimental model)
+	// This model offers improved performance and should be available in free tier/preview.
+	model := client.GenerativeModel("gemini-2.0-flash-exp")
 
 	return &ChatService{
 		repo:        repo,
@@ -123,4 +124,12 @@ func (s *ChatService) GetSessionMessages(sessionID uuid.UUID) ([]models.ChatMess
 		return nil, err
 	}
 	return session.Messages, nil
+}
+
+func (s *ChatService) DeleteHistory(userID uuid.UUID) error {
+	return s.repo.DeleteHistory(userID)
+}
+
+func (s *ChatService) DeleteSession(sessionID uuid.UUID) error {
+	return s.repo.DeleteSession(sessionID)
 }

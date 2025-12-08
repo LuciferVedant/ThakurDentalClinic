@@ -20,7 +20,7 @@ func NewBlogService(blogRepo *repository.BlogRepository, userRepo *repository.Us
 	}
 }
 
-func (s *BlogService) CreateBlogPost(authorID uuid.UUID, title, content, imageURL string) (*models.BlogPost, error) {
+func (s *BlogService) CreateBlogPost(authorID uuid.UUID, title, content, imageURLs string) (*models.BlogPost, error) {
 	// Verify author is admin doctor
 	author, err := s.userRepo.GetUserByID(authorID)
 	if err != nil {
@@ -32,10 +32,10 @@ func (s *BlogService) CreateBlogPost(authorID uuid.UUID, title, content, imageUR
 	}
 
 	post := &models.BlogPost{
-		Title:    title,
-		Content:  content,
-		ImageURL: imageURL,
-		AuthorID: authorID,
+		Title:     title,
+		Content:   content,
+		ImageURLs: imageURLs,
+		AuthorID:  authorID,
 	}
 
 	if err := s.blogRepo.CreateBlogPost(post); err != nil {
@@ -53,7 +53,7 @@ func (s *BlogService) GetBlogPost(id uuid.UUID) (*models.BlogPost, error) {
 	return s.blogRepo.GetBlogPostByID(id)
 }
 
-func (s *BlogService) UpdateBlogPost(id uuid.UUID, editorID uuid.UUID, title, content, imageURL string) (*models.BlogPost, error) {
+func (s *BlogService) UpdateBlogPost(id uuid.UUID, editorID uuid.UUID, title, content, imageURLs string) (*models.BlogPost, error) {
 	// Verify editor is admin doctor
 	editor, err := s.userRepo.GetUserByID(editorID)
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *BlogService) UpdateBlogPost(id uuid.UUID, editorID uuid.UUID, title, co
 
 	post.Title = title
 	post.Content = content
-	post.ImageURL = imageURL
+	post.ImageURLs = imageURLs
 
 	if err := s.blogRepo.UpdateBlogPost(post); err != nil {
 		return nil, err

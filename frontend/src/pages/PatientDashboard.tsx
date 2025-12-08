@@ -1,6 +1,8 @@
 import React from 'react';
 import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
+import ProfileCard from '../components/profile/ProfileCard';
+import AppointmentList from '../components/appointments/AppointmentList';
 
 const PatientDashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
@@ -60,6 +62,16 @@ const PatientDashboard: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Profile Section */}
+        <section id="profile">
+          <ProfileCard />
+        </section>
+
+        {/* Appointments Section */}
+        <section id="appointments">
+          <AppointmentList />
+        </section>
 
         {/* Book Appointment */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">

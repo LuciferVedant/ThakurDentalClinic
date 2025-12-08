@@ -11,7 +11,7 @@ type BlogPost struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	Title     string    `gorm:"not null" json:"title"`
 	Content   string    `gorm:"type:text;not null" json:"content"`
-	ImageURL  string    `json:"imageUrl"`
+	ImageURLs string    `gorm:"type:text" json:"imageUrls"` // JSON array of strings
 	AuthorID  uuid.UUID `gorm:"type:uuid;not null" json:"authorId"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`

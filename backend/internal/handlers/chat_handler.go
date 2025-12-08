@@ -89,3 +89,35 @@ func (h *ChatHandler) GetSessionMessages(c *gin.Context) {
 
 	c.JSON(http.StatusOK, messages)
 }
+
+func (h *ChatHandler) DeleteHistory(c *gin.Context) {
+	id, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userID := id.(uuid.UUID)
+
+	if err := h.service.DeleteHistory(userID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Chat history deleted successfully"})
+}
+
+func (h *ChatHandler) DeleteSession(c *gin.Context) {
+	sessionIDStr := c.Param("sessionId")
+	sessionID, err := uuid.Parse(sessionIDStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session ID"})
+		return
+	}
+
+	if err := h.service.DeleteSession(sessionID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Chat session deleted successfully"})
+}

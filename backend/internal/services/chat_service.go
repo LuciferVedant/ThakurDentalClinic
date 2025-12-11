@@ -33,9 +33,9 @@ func NewChatService(repo *repository.ChatRepository) (*ChatService, error) {
 	}
 	log.Printf("Successfully created GenAI client.")
 
-	// Using gemini-2.0-flash-exp as requested (Flash 2.0 experimental model)
-	// This model offers improved performance and should be available in free tier/preview.
-	model := client.GenerativeModel("gemini-2.0-flash-exp")
+	// Using gemini-flash-latest as the latest free tier model
+	// This model offers good performance and is available in the free tier
+	model := client.GenerativeModel("gemini-flash-latest")
 
 	return &ChatService{
 		repo:        repo,

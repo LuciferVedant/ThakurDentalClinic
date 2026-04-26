@@ -117,6 +117,7 @@ func main() {
 		{
 			protected.GET("/auth/me", authHandler.GetMe)
 			protected.POST("/upload", uploadHandler.UploadFile)
+			protected.POST("/upload/multiple", uploadHandler.UploadMultipleFiles)
 
 			// Appointment Routes
 			appointments := protected.Group("/appointments")

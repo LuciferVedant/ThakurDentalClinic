@@ -84,13 +84,13 @@ const AdminDashboard: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
                 Admin Dashboard
               </h2>
-              <p className="text-gray-600">Manage staff accounts and clinic operations</p>
+              <p className="text-gray-600 dark:text-gray-300">Manage staff accounts and clinic operations</p>
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
@@ -153,8 +153,8 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Users List */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Staff Members</h3>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Staff Members</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
@@ -165,11 +165,11 @@ const AdminDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                 </tr>
               </thead>
-              <tbody className="bg-white/50 divide-y divide-gray-200">
+              <tbody className="bg-white/50 dark:bg-gray-800/50 divide-y divide-gray-200 dark:divide-gray-700">
                 {users.filter(u => u.userType !== 'patient').map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {user.firstName} {user.lastName}
                         {user.isAdmin && (
                           <span className="ml-2 px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
@@ -178,7 +178,7 @@ const AdminDashboard: React.FC = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 py-1 text-xs font-semibold rounded-full bg-primary-100 text-primary-800 capitalize">
                         {user.userType}
@@ -199,7 +199,7 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Blog Management */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
           <AdminBlogList />
         </div>
       </div>
@@ -207,8 +207,8 @@ const AdminDashboard: React.FC = () => {
       {/* Create Staff Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Create Staff Account</h3>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 transition-colors">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create Staff Account</h3>
             
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
@@ -218,11 +218,11 @@ const AdminDashboard: React.FC = () => {
 
             <form onSubmit={handleCreateStaff} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">User Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">User Type</label>
                 <select
                   value={userType}
                   onChange={(e) => setUserType(e.target.value as 'doctor' | 'receptionist')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 >
                   <option value="doctor">Doctor</option>
                   <option value="receptionist">Receptionist</option>
@@ -236,61 +236,61 @@ const AdminDashboard: React.FC = () => {
                     type="checkbox"
                     checked={formData.isAdmin}
                     onChange={(e) => setFormData({ ...formData, isAdmin: e.target.checked })}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
                   />
-                  <label htmlFor="isAdmin" className="ml-2 block text-sm text-gray-900">
+                  <label htmlFor="isAdmin" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
                     Grant Admin Privileges
                   </label>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">First Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
                 <input
                   type="text"
                   required
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Last Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
                 <input
                   type="text"
                   required
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
                     required
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                   />
                   <button
                     type="button"
                     onClick={generateRandomPassword}
-                    className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
                   >
                     Generate
                   </button>
@@ -304,7 +304,7 @@ const AdminDashboard: React.FC = () => {
                     setShowCreateModal(false);
                     setError(null);
                   }}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   Cancel
                 </button>
@@ -324,30 +324,30 @@ const AdminDashboard: React.FC = () => {
       {/* Credentials Modal */}
       {credentials && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 transition-colors">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Account Created!</h3>
-              <p className="text-gray-600">Share these credentials securely with the staff member</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Account Created!</h3>
+              <p className="text-gray-600 dark:text-gray-300">Share these credentials securely with the staff member</p>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 space-y-3">
+            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6 space-y-3">
               <div>
                 <label className="text-xs font-medium text-gray-500">Email</label>
-                <p className="text-sm font-mono text-gray-900 break-all">{credentials.email}</p>
+                <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">{credentials.email}</p>
               </div>
               <div>
                 <label className="text-xs font-medium text-gray-500">Password</label>
-                <p className="text-sm font-mono text-gray-900 break-all">{credentials.password}</p>
+                <p className="text-sm font-mono text-gray-900 dark:text-gray-100 break-all">{credentials.password}</p>
               </div>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-6">
-              <p className="text-xs text-yellow-800">
+            <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-6">
+              <p className="text-xs text-yellow-800 dark:text-yellow-200">
                 ⚠️ Make sure to save these credentials. They won't be shown again.
               </p>
             </div>

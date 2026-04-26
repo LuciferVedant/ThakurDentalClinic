@@ -11,11 +11,11 @@ const PatientDashboard: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
             Welcome back, {user?.firstName}!
           </h2>
-          <p className="text-gray-600">Manage your appointments and dental health records</p>
+          <p className="text-gray-600 dark:text-gray-300">Manage your appointments and dental health records</p>
         </div>
 
         {/* Quick Stats */}
@@ -74,17 +74,17 @@ const PatientDashboard: React.FC = () => {
         </section>
 
         {/* Book Appointment */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Book an Appointment</h3>
-          <p className="text-gray-600 mb-6">Schedule your next dental checkup</p>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Book an Appointment</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">Schedule your next dental checkup</p>
           <button className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
             Schedule Appointment
           </button>
         </div>
 
         {/* Recent Activity */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">Recent Activity</h3>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
           <div className="text-center py-12 text-gray-500">
             <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

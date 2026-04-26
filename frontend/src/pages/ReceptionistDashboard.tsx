@@ -11,15 +11,15 @@ const ReceptionistDashboard: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
             Welcome, {user?.firstName}!
           </h2>
-          <p className="text-gray-600">Manage appointments and patient check-ins</p>
+          <p className="text-gray-600 dark:text-gray-300">Manage appointments and patient check-ins</p>
         </div>
 
         {/* Profile Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-colors">
              <ProfileCard />
         </div>
 
@@ -69,8 +69,8 @@ const ReceptionistDashboard: React.FC = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Quick Actions</h3>
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button className="p-4 bg-gradient-to-r from-primary-50 to-secondary-50 hover:from-primary-100 hover:to-secondary-100 border border-primary-200 rounded-lg transition-all duration-200 text-left group">
               <div className="flex items-center space-x-3">
@@ -80,7 +80,7 @@ const ReceptionistDashboard: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">New Appointment</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900">New Appointment</h4>
                   <p className="text-sm text-gray-600">Schedule a patient visit</p>
                 </div>
               </div>
@@ -94,7 +94,7 @@ const ReceptionistDashboard: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900">Check-In Patient</h4>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900">Check-In Patient</h4>
                   <p className="text-sm text-gray-600">Mark patient as arrived</p>
                 </div>
               </div>

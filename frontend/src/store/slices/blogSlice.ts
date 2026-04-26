@@ -8,6 +8,7 @@ export interface BlogPost {
   title: string;
   content: string;
   imageUrl: string;
+  imageUrls: string[];
   authorId: string;
   createdAt: string;
   updatedAt: string;
@@ -30,6 +31,32 @@ const initialState: BlogState = {
   isLoading: false,
   error: null,
 };
+
+// Upload multiple images
+export const uploadImages = createAsyncThunk(
+  'blog/uploadImages',
+  async (files: FileList, { getState, rejectWithValue }) => {
+    try {
+      const state = getState() as any;
+      const formData = new FormData();
+      
+      // Append all files to FormData
+      Array.from(files).forEach((file) => {
+        formData.append('files', file);
+      });
+
+      const response = await axios.post(`${API_URL}/upload/multiple`, formData, {
+        headers: { 
+          Authorization: `Bearer ${state.auth.token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to upload images');
+    }
+  }
+);
 
 // Async thunks
 export const fetchBlogPosts = createAsyncThunk(
@@ -58,10 +85,10 @@ export const fetchBlogPost = createAsyncThunk(
 
 export const createBlogPost = createAsyncThunk(
   'blog/createBlogPost',
-  async (postData: { title: string; content: string; imageUrl: string }, { getState, rejectWithValue }) => {
+  async (postData: { title: string; content: string; imageUrls: string[] }, { getState, rejectWithValue }) => {
     try {
       const state = getState() as any;
-      const response = await axios.post(`${API_URL}/api/blogs`, postData, {
+      const response = await axios.post(`${API_URL}/blogs`, postData, {
         headers: { Authorization: `Bearer ${state.auth.token}` },
       });
       return response.data;
@@ -73,10 +100,10 @@ export const createBlogPost = createAsyncThunk(
 
 export const updateBlogPost = createAsyncThunk(
   'blog/updateBlogPost',
-  async ({ id, data }: { id: string; data: { title: string; content: string; imageUrl: string } }, { getState, rejectWithValue }) => {
+  async ({ id, data }: { id: string; data: { title: string; content: string; imageUrls: string[] } }, { getState, rejectWithValue }) => {
     try {
       const state = getState() as any;
-      const response = await axios.put(`${API_URL}/api/blogs/${id}`, data, {
+      const response = await axios.put(`${API_URL}/blogs/${id}`, data, {
         headers: { Authorization: `Bearer ${state.auth.token}` },
       });
       return response.data;
@@ -91,7 +118,7 @@ export const deleteBlogPost = createAsyncThunk(
   async (id: string, { getState, rejectWithValue }) => {
     try {
       const state = getState() as any;
-      await axios.delete(`${API_URL}/api/blogs/${id}`, {
+      await axios.delete(`${API_URL}/blogs/${id}`, {
         headers: { Authorization: `Bearer ${state.auth.token}` },
       });
       return id;

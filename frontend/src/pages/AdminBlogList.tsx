@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchBlogPosts, deleteBlogPost, type BlogPost } from '../store/slices/blogSlice';
 import AdminBlogEditor from './AdminBlogEditor';
+import { useTranslation } from 'react-i18next';
 
 const STATIC_URL = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
 
@@ -10,6 +11,7 @@ const AdminBlogList: React.FC = () => {
   const { posts, isLoading } = useAppSelector((state) => state.blog);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     dispatch(fetchBlogPosts());
@@ -48,17 +50,17 @@ const AdminBlogList: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Blog Management</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('dashboard.blogManagement')}</h2>
         <button
           onClick={handleCreate}
           className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
         >
-          Create New Post
+          {t('dashboard.createNewPost')}
         </button>
       </div>
 
       {isLoading ? (
-        <div className="text-center py-8 text-gray-600 dark:text-gray-400">Loading...</div>
+        <div className="text-center py-8 text-gray-600 dark:text-gray-400">{t('dashboard.loading')}</div>
       ) : (
         <div className="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md transition-colors">
           <ul className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -87,13 +89,13 @@ const AdminBlogList: React.FC = () => {
                       onClick={() => handleEdit(post.id)}
                       className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 text-sm font-medium transition-colors"
                     >
-                      Edit
+                      {t('dashboard.edit')}
                     </button>
                     <button
                       onClick={() => handleDelete(post.id)}
                       className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 text-sm font-medium transition-colors"
                     >
-                      Delete
+                      {t('dashboard.delete')}
                     </button>
                   </div>
                 </div>
@@ -102,7 +104,7 @@ const AdminBlogList: React.FC = () => {
             })}
             {posts.length === 0 && (
               <li className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                No blog posts found. Create one to get started!
+                {t('dashboard.noBlogPosts')}
               </li>
             )}
           </ul>

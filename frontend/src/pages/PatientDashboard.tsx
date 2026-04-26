@@ -3,9 +3,11 @@ import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
 import ProfileCard from '../components/profile/ProfileCard';
 import AppointmentList from '../components/appointments/AppointmentList';
+import { useTranslation } from 'react-i18next';
 
 const PatientDashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   return (
     <Layout>
@@ -15,7 +17,7 @@ const PatientDashboard: React.FC = () => {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
             Welcome back, {user?.firstName}!
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">Manage your appointments and dental health records</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('dashboard.manageAppointments')}</p>
         </div>
 
         {/* Quick Stats */}
@@ -23,7 +25,7 @@ const PatientDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Upcoming Appointments</p>
+                <p className="text-blue-100 text-sm font-medium">{t('dashboard.upcomingAppointments')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -37,7 +39,7 @@ const PatientDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Total Visits</p>
+                <p className="text-green-100 text-sm font-medium">{t('dashboard.totalVisits')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -51,8 +53,8 @@ const PatientDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Next Checkup</p>
-                <p className="text-lg font-semibold mt-2">Not Scheduled</p>
+                <p className="text-purple-100 text-sm font-medium">{t('dashboard.nextCheckup')}</p>
+                <p className="text-lg font-semibold mt-2">{t('dashboard.notScheduled')}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,21 +77,21 @@ const PatientDashboard: React.FC = () => {
 
         {/* Book Appointment */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Book an Appointment</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">Schedule your next dental checkup</p>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('dashboard.bookAppointment')}</h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">{t('dashboard.scheduleCheckup')}</p>
           <button className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-            Schedule Appointment
+            {t('dashboard.scheduleAppointment')}
           </button>
         </div>
 
         {/* Recent Activity */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('dashboard.recentActivity')}</h3>
           <div className="text-center py-12 text-gray-500">
             <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p>No recent activity</p>
+            <p>{t('dashboard.noRecentActivity')}</p>
           </div>
         </div>
       </div>

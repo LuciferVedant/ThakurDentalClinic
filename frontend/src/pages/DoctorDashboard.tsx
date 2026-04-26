@@ -3,9 +3,11 @@ import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
 import AppointmentList from '../components/appointments/AppointmentList';
 import ProfileCard from '../components/profile/ProfileCard';
+import { useTranslation } from 'react-i18next';
 
 const DoctorDashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   return (
     <Layout>
@@ -17,10 +19,10 @@ const DoctorDashboard: React.FC = () => {
               <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
                 Dr. {user?.firstName} {user?.lastName}
               </h2>
-              <p className="text-gray-600 dark:text-gray-300">Manage your patients and appointments</p>
+              <p className="text-gray-600 dark:text-gray-300">{t('dashboard.managePatients')}</p>
               {user?.isAdmin && (
                 <span className="inline-block mt-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-semibold rounded-full">
-                  Administrator
+                  {t('dashboard.administrator')}
                 </span>
               )}
             </div>
@@ -38,7 +40,7 @@ const DoctorDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Today's Patients</p>
+                <p className="text-blue-100 text-sm font-medium">{t('dashboard.todaysPatients')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -52,7 +54,7 @@ const DoctorDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Total Patients</p>
+                <p className="text-green-100 text-sm font-medium">{t('dashboard.totalPatientsDoc')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -66,7 +68,7 @@ const DoctorDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Pending</p>
+                <p className="text-purple-100 text-sm font-medium">{t('dashboard.pending')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -80,7 +82,7 @@ const DoctorDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-pink-100 text-sm font-medium">Completed</p>
+                <p className="text-pink-100 text-sm font-medium">{t('dashboard.completed')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">

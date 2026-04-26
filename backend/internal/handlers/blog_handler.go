@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"thakur-dental-clinic/backend/internal/models"
 	"thakur-dental-clinic/backend/internal/services"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,68 @@ type BlogHandler struct {
 
 func NewBlogHandler(blogService *services.BlogService) *BlogHandler {
 	return &BlogHandler{blogService: blogService}
+}
+
+// BlogPostResponse represents the response structure with parsed imageUrls
+type BlogPostResponse struct {
+	ID        uuid.UUID `json:"id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	ImageURL  string    `json:"imageUrl"`
+	ImageURLs []string  `json:"imageUrls"`
+	AuthorID  uuid.UUID `json:"authorId"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	Author    *struct {
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+	} `json:"author,omitempty"`
+}
+
+func convertToResponse(post *models.BlogPost) BlogPostResponse {
+	var imageUrls []string
+	if post.ImageURLs != "" {
+		json.Unmarshal([]byte(post.ImageURLs), &imageUrls)
+	}
+
+	// Fallback: if imageUrls is empty but we have a legacy imageUrl field
+	if len(imageUrls) == 0 && post.ImageURLs != "" {
+		imageUrls = []string{post.ImageURLs}
+	}
+
+	var author *struct {
+		FirstName string `json:"firstName"`
+		LastName  string `json:"lastName"`
+	}
+	if post.Author.ID != uuid.Nil {
+		author = &struct {
+			FirstName string `json:"firstName"`
+			LastName  string `json:"lastName"`
+		}{
+			FirstName: post.Author.FirstName,
+			LastName:  post.Author.LastName,
+		}
+	}
+
+	return BlogPostResponse{
+		ID:        post.ID,
+		Title:     post.Title,
+		Content:   post.Content,
+		ImageURL:  "", // Legacy field, kept for compatibility
+		ImageURLs: imageUrls,
+		AuthorID:  post.AuthorID,
+		CreatedAt: post.CreatedAt.Format("2006-01-02T15:04:05Z"),
+		UpdatedAt: post.UpdatedAt.Format("2006-01-02T15:04:05Z"),
+		Author:    author,
+	}
+}
+
+func convertToResponseList(posts []models.BlogPost) []BlogPostResponse {
+	responses := make([]BlogPostResponse, len(posts))
+	for i, post := range posts {
+		responses[i] = convertToResponse(&post)
+	}
+	return responses
 }
 
 func (h *BlogHandler) CreateBlogPost(c *gin.Context) {
@@ -48,7 +111,7 @@ func (h *BlogHandler) CreateBlogPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, post)
+	c.JSON(http.StatusCreated, convertToResponse(post))
 }
 
 func (h *BlogHandler) GetAllBlogPosts(c *gin.Context) {
@@ -58,7 +121,7 @@ func (h *BlogHandler) GetAllBlogPosts(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, posts)
+	c.JSON(http.StatusOK, convertToResponseList(posts))
 }
 
 func (h *BlogHandler) GetBlogPost(c *gin.Context) {
@@ -75,7 +138,7 @@ func (h *BlogHandler) GetBlogPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, post)
+	c.JSON(http.StatusOK, convertToResponse(post))
 }
 
 func (h *BlogHandler) UpdateBlogPost(c *gin.Context) {
@@ -116,7 +179,7 @@ func (h *BlogHandler) UpdateBlogPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, post)
+	c.JSON(http.StatusOK, convertToResponse(post))
 }
 
 func (h *BlogHandler) DeleteBlogPost(c *gin.Context) {

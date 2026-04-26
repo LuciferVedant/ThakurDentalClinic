@@ -11,13 +11,13 @@ const DoctorDashboard: React.FC = () => {
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
                 Dr. {user?.firstName} {user?.lastName}
               </h2>
-              <p className="text-gray-600">Manage your patients and appointments</p>
+              <p className="text-gray-600 dark:text-gray-300">Manage your patients and appointments</p>
               {user?.isAdmin && (
                 <span className="inline-block mt-2 px-3 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-white text-xs font-semibold rounded-full">
                   Administrator
@@ -29,7 +29,7 @@ const DoctorDashboard: React.FC = () => {
         </div>
         
         {/* Profile Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-colors">
              <ProfileCard />
         </div>
 

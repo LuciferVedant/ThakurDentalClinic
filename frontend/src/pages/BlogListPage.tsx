@@ -4,10 +4,12 @@ import { motion } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { fetchBlogPosts, type BlogPost } from '../store/slices/blogSlice';
 import Navbar from '@/components/Navbar';
+import ImageCarousel from '@/components/ImageCarousel';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
+import { Images } from 'lucide-react';
 
 const BlogListPage: React.FC = () => {
   const { t } = useTranslation();
@@ -48,13 +50,24 @@ const BlogListPage: React.FC = () => {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <Link to={`/blogs/${post.id}`}>
-                    <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-none shadow-md">
-                      <div className="aspect-video w-full overflow-hidden">
-                        <img 
-                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
-                          src={post.imageUrl || 'https://via.placeholder.com/400x200'} 
-                          alt={post.title} 
+                    <Card className="h-full overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-none shadow-md group">
+                      <div className="relative">
+                        <ImageCarousel 
+                          images={post.imageUrls || [post.imageUrl]}
+                          alt={post.title}
+                          aspectRatio="video"
+                          showDots={(post.imageUrls?.length || 0) > 1}
+                          showArrows={(post.imageUrls?.length || 0) > 1}
+                          autoPlay={false}
+                          variant="card"
                         />
+                        {/* Multiple images indicator */}
+                        {(post.imageUrls?.length || 0) > 1 && (
+                          <div className="absolute top-3 left-3 z-20 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-2.5 py-1.5 rounded-full flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <Images className="w-3.5 h-3.5" />
+                            <span>{post.imageUrls?.length} photos</span>
+                          </div>
+                        )}
                       </div>
                       <CardHeader className="p-6 pb-4">
                         <div className="flex items-center justify-between mb-2">

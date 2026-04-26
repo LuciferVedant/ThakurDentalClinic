@@ -3,9 +3,11 @@ import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
 import AppointmentList from '../components/appointments/AppointmentList';
 import ProfileCard from '../components/profile/ProfileCard';
+import { useTranslation } from 'react-i18next';
 
 const ReceptionistDashboard: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
+  const { t } = useTranslation();
 
   return (
     <Layout>
@@ -15,7 +17,7 @@ const ReceptionistDashboard: React.FC = () => {
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
             Welcome, {user?.firstName}!
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">Manage appointments and patient check-ins</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('dashboard.manageAppointmentsReceptionist')}</p>
         </div>
 
         {/* Profile Section */}
@@ -28,7 +30,7 @@ const ReceptionistDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Today's Appointments</p>
+                <p className="text-blue-100 text-sm font-medium">{t('dashboard.todaysAppointments')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -42,7 +44,7 @@ const ReceptionistDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Checked In</p>
+                <p className="text-green-100 text-sm font-medium">{t('dashboard.checkedIn')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -56,7 +58,7 @@ const ReceptionistDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white transform transition-all duration-200 hover:scale-105">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Waiting</p>
+                <p className="text-purple-100 text-sm font-medium">{t('dashboard.waiting')}</p>
                 <p className="text-3xl font-bold mt-2">0</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
@@ -70,7 +72,7 @@ const ReceptionistDashboard: React.FC = () => {
 
         {/* Quick Actions */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Quick Actions</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('dashboard.quickActions')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button className="p-4 bg-gradient-to-r from-primary-50 to-secondary-50 hover:from-primary-100 hover:to-secondary-100 border border-primary-200 rounded-lg transition-all duration-200 text-left group">
               <div className="flex items-center space-x-3">
@@ -80,8 +82,8 @@ const ReceptionistDashboard: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-900">New Appointment</h4>
-                  <p className="text-sm text-gray-600">Schedule a patient visit</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900">{t('dashboard.newAppointment')}</h4>
+                  <p className="text-sm text-gray-600">{t('dashboard.scheduleVisit')}</p>
                 </div>
               </div>
             </button>
@@ -94,8 +96,8 @@ const ReceptionistDashboard: React.FC = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-900">Check-In Patient</h4>
-                  <p className="text-sm text-gray-600">Mark patient as arrived</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-900">{t('dashboard.checkInPatient')}</h4>
+                  <p className="text-sm text-gray-600">{t('dashboard.markArrived')}</p>
                 </div>
               </div>
             </button>

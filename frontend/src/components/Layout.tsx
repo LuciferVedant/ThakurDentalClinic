@@ -4,6 +4,7 @@ import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeSwitcher from './ThemeSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,6 +14,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     dispatch(logout());
@@ -47,14 +49,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     {user.firstName} {user.lastName}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                    {user.userType} {user.isAdmin && '(Admin)'}
+                    {user.userType} {user.isAdmin && t('dashboard.admin')}
                   </p>
                 </div>
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  Logout
+                  {t('dashboard.logout')}
                 </button>
               </div>
             )}

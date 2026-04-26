@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import api from '../utils/api';
 import AdminBlogList from './AdminBlogList';
+import { useTranslation } from 'react-i18next';
 
 interface User {
   id: string;
@@ -16,6 +17,7 @@ interface User {
 
 const AdminDashboard: React.FC = () => {
   // const { user } = useAppSelector((state) => state.auth); // Unused
+  const { t } = useTranslation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [userType, setUserType] = useState<'doctor' | 'receptionist'>('doctor');
   const [users, setUsers] = useState<User[]>([]);
@@ -88,15 +90,15 @@ const AdminDashboard: React.FC = () => {
           <div className="flex justify-between items-center">
             <div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
-                Admin Dashboard
+                {t('dashboard.adminDashboard')}
               </h2>
-              <p className="text-gray-600 dark:text-gray-300">Manage staff accounts and clinic operations</p>
+              <p className="text-gray-600 dark:text-gray-300">{t('dashboard.manageStaff')}</p>
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
               className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
-              + Add Staff
+              {t('dashboard.addStaff')}
             </button>
           </div>
         </div>
@@ -106,7 +108,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm font-medium">Total Doctors</p>
+                <p className="text-blue-100 text-sm font-medium">{t('dashboard.totalDoctors')}</p>
                 <p className="text-3xl font-bold mt-2">
                   {users.filter(u => u.userType === 'doctor').length}
                 </p>
@@ -122,7 +124,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl shadow-lg p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm font-medium">Receptionists</p>
+                <p className="text-green-100 text-sm font-medium">{t('dashboard.receptionists')}</p>
                 <p className="text-3xl font-bold mt-2">
                   {users.filter(u => u.userType === 'receptionist').length}
                 </p>
@@ -138,7 +140,7 @@ const AdminDashboard: React.FC = () => {
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm font-medium">Total Patients</p>
+                <p className="text-purple-100 text-sm font-medium">{t('dashboard.totalPatients')}</p>
                 <p className="text-3xl font-bold mt-2">
                   {users.filter(u => u.userType === 'patient').length}
                 </p>
@@ -154,15 +156,15 @@ const AdminDashboard: React.FC = () => {
 
         {/* Users List */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Staff Members</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('dashboard.staffMembers')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.name')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.email')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.role')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.status')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white/50 dark:bg-gray-800/50 divide-y divide-gray-200 dark:divide-gray-700">
@@ -188,7 +190,7 @@ const AdminDashboard: React.FC = () => {
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                         user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}>
-                        {user.isActive ? 'Active' : 'Inactive'}
+                        {user.isActive ? t('dashboard.active') : t('dashboard.inactive')}
                       </span>
                     </td>
                   </tr>
@@ -208,7 +210,7 @@ const AdminDashboard: React.FC = () => {
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 transition-colors">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create Staff Account</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('dashboard.createStaffAccount')}</h3>
             
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
@@ -218,14 +220,14 @@ const AdminDashboard: React.FC = () => {
 
             <form onSubmit={handleCreateStaff} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">User Type</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dashboard.userType')}</label>
                 <select
                   value={userType}
                   onChange={(e) => setUserType(e.target.value as 'doctor' | 'receptionist')}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 >
-                  <option value="doctor">Doctor</option>
-                  <option value="receptionist">Receptionist</option>
+                  <option value="doctor">{t('dashboard.doctor')}</option>
+                  <option value="receptionist">{t('dashboard.receptionist')}</option>
                 </select>
               </div>
 
@@ -239,13 +241,13 @@ const AdminDashboard: React.FC = () => {
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded"
                   />
                   <label htmlFor="isAdmin" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
-                    Grant Admin Privileges
+                    {t('dashboard.grantAdmin')}
                   </label>
                 </div>
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">First Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dashboard.firstName')}</label>
                 <input
                   type="text"
                   required
@@ -256,7 +258,7 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Last Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dashboard.lastName')}</label>
                 <input
                   type="text"
                   required
@@ -267,7 +269,7 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dashboard.email')}</label>
                 <input
                   type="email"
                   required
@@ -278,7 +280,7 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dashboard.password')}</label>
                 <div className="flex space-x-2">
                   <input
                     type="text"
@@ -292,7 +294,7 @@ const AdminDashboard: React.FC = () => {
                     onClick={generateRandomPassword}
                     className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-lg transition-colors"
                   >
-                    Generate
+                    {t('dashboard.generate')}
                   </button>
                 </div>
               </div>
@@ -306,14 +308,14 @@ const AdminDashboard: React.FC = () => {
                   }}
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
-                  Cancel
+                  {t('dashboard.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
                   className="flex-1 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white rounded-lg transition-all duration-200 disabled:opacity-50"
                 >
-                  {isLoading ? 'Creating...' : 'Create Account'}
+                  {isLoading ? 'Creating...' : t('dashboard.createAccount')}
                 </button>
               </div>
             </form>
@@ -331,8 +333,8 @@ const AdminDashboard: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Account Created!</h3>
-              <p className="text-gray-600 dark:text-gray-300">Share these credentials securely with the staff member</p>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t('dashboard.accountCreated')}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{t('dashboard.shareCredentials')}</p>
             </div>
 
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 mb-6 space-y-3">
@@ -348,7 +350,7 @@ const AdminDashboard: React.FC = () => {
 
             <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 mb-6">
               <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                ⚠️ Make sure to save these credentials. They won't be shown again.
+                ⚠️ {t('dashboard.saveCredentials')}
               </p>
             </div>
 
@@ -356,7 +358,7 @@ const AdminDashboard: React.FC = () => {
               onClick={handleCloseCredentials}
               className="w-full px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white rounded-lg transition-all duration-200"
             >
-              Done
+              {t('dashboard.done')}
             </button>
           </div>
         </div>

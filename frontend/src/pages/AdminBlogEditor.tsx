@@ -3,6 +3,7 @@ import { Plus, Upload, Image as ImageIcon, Loader2, Trash2, GripVertical } from 
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { createBlogPost, updateBlogPost, fetchBlogPost, clearCurrentPost, uploadImages } from '../store/slices/blogSlice';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const STATIC_URL = (import.meta.env.VITE_API_URL || '').replace(/\/api\/?$/, '');
 
@@ -23,6 +24,7 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
   const dispatch = useAppDispatch();
   const { currentPost, isLoading } = useAppSelector((state) => state.blog);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t } = useTranslation();
   
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -197,19 +199,19 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
     <div className="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6 transition-colors">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {postId ? 'Edit Blog Post' : 'Create New Post'}
+          {postId ? t('dashboard.editBlogPost') : t('dashboard.createBlogPost')}
         </h2>
         <button
           onClick={onClose}
           className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
         >
-          Cancel
+          {t('dashboard.cancel')}
         </button>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('dashboard.title')}</label>
           <input
             type="text"
             required
@@ -220,7 +222,7 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Images</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('dashboard.images')}</label>
           
           {/* Drag & Drop Zone */}
           <div
@@ -245,11 +247,9 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
             />
             <Upload className="w-10 h-10 text-gray-400 mx-auto mb-3" />
             <p className="text-sm text-gray-600 dark:text-gray-300">
-              <span className="font-medium text-primary-600 dark:text-primary-400">Click to upload</span> or drag and drop
+              <span className="font-medium text-primary-600 dark:text-primary-400">{t('dashboard.clickToUpload')}</span> {t('dashboard.dragAndDrop')}
             </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              PNG, JPG, GIF, WebP up to 5MB each (max 10 images)
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('dashboard.imageFormats')}</p>
           </div>
 
           {/* Upload Progress */}
@@ -350,7 +350,7 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
                   className="aspect-square rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
                 >
                   <Plus className="w-8 h-8 mb-1" />
-                  <span className="text-xs">Add More</span>
+                  <span className="text-xs">{t('dashboard.addMore')}</span>
                 </button>
               )}
             </div>
@@ -362,12 +362,12 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
             onClick={addImageUrl}
             className="mt-3 inline-flex items-center text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300"
           >
-            <ImageIcon className="w-4 h-4 mr-1" /> Add Image URL
+            <ImageIcon className="w-4 h-4 mr-1" /> {t('dashboard.addImageUrl')}
           </button>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Content</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t('dashboard.content')}</label>
           <textarea
             required
             rows={10}
@@ -383,14 +383,14 @@ const AdminBlogEditor: React.FC<AdminBlogEditorProps> = ({ postId, onClose }) =>
             onClick={onClose}
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
           >
-            Cancel
+            {t('dashboard.cancel')}
           </button>
           <button
             type="submit"
             disabled={isLoading || !!uploadProgress}
             className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
           >
-            {isLoading ? 'Saving...' : 'Save Post'}
+            {isLoading ? t('dashboard.saving') : t('dashboard.savePost')}
           </button>
         </div>
       </form>

@@ -17,7 +17,7 @@ import BlogDetailPage from './pages/BlogDetailPage';
 
 import ChatWidget from './components/ChatWidget';
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '518525538270-u6omr7kggi5mg1sfalkc0dm71ucg3udv.apps.googleusercontent.com';
 
 const App: React.FC = () => {
   return (

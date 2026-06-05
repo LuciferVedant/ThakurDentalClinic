@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"thakur-dental-clinic/backend/internal/config"
+	"thakur-dental-clinic/backend/internal/cron"
 	"thakur-dental-clinic/backend/internal/handlers"
 	"thakur-dental-clinic/backend/internal/middleware"
 	"thakur-dental-clinic/backend/internal/models"
@@ -28,6 +29,38 @@ func main() {
 	// Auto-migrate models
 	if err := db.AutoMigrate(&models.User{}, &models.OAuthAccount{}, &models.BlogPost{}, &models.ChatSession{}, &models.ChatMessage{}, &models.Appointment{}); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
+	}
+
+	// Start background appointment reminder worker
+	cron.StartReminderWorker(db)
+
+	// Seed Admin Doctor
+	var adminUser models.User
+	if err := db.Where("email = ?", "vedrocks2000@gmail.com").First(&adminUser).Error; err != nil {
+		// Admin user doesn't exist, create it
+		hashedPassword, _ := utils.HashPassword("admin123") // Default password, user should change it or login via Google
+		adminUser = models.User{
+			Email:        "vedrocks2000@gmail.com",
+			PasswordHash: &hashedPassword,
+			FirstName:    "Vedant",
+			LastName:     "Khatri",
+			UserType:     models.UserTypeDoctor,
+			IsAdmin:      true,
+			IsActive:     true,
+		}
+		if err := db.Create(&adminUser).Error; err != nil {
+			log.Printf("Warning: Failed to seed admin user: %v", err)
+		} else {
+			log.Println("Successfully seeded admin doctor: Vedant Khatri")
+		}
+	} else {
+		// Ensure it's always an admin doctor
+		if !adminUser.IsAdmin || adminUser.UserType != models.UserTypeDoctor {
+			adminUser.IsAdmin = true
+			adminUser.UserType = models.UserTypeDoctor
+			db.Save(&adminUser)
+			log.Println("Updated existing user to be Admin Doctor")
+		}
 	}
 
 	// Initialize repositories
@@ -55,6 +88,9 @@ func main() {
 	if chatService != nil {
 		chatHandler = handlers.NewChatHandler(chatService)
 	}
+
+	// Wire notification handler callback
+	services.NotifyFunc = handlers.SendNotification
 
 	// Setup Gin router
 	router := gin.Default()
@@ -119,6 +155,9 @@ func main() {
 			protected.POST("/upload", uploadHandler.UploadFile)
 			protected.POST("/upload/multiple", uploadHandler.UploadMultipleFiles)
 
+			// SSE real-time notifications stream
+			protected.GET("/auth/stream", handlers.StreamHandler)
+
 			// Appointment Routes
 			appointments := protected.Group("/appointments")
 			{
@@ -131,6 +170,14 @@ func main() {
 				// Doctor/Receptionist routes logic handled in handler or via simplified generic endpoints for now
 				appointments.POST("", appointmentHandler.Create) // Admin/Doctor usually
 				appointments.PUT("/:id/prescription", appointmentHandler.UploadPrescription)
+				appointments.PUT("/:id/arrived", appointmentHandler.MarkArrived)
+				appointments.PUT("/:id/start", appointmentHandler.StartConsultation)
+				appointments.PUT("/:id/complete", appointmentHandler.Complete)
+
+				// New Queue & Override Management Routes
+				appointments.PUT("/:id/reassign", middleware.RequireAdmin(), appointmentHandler.Reassign)
+				appointments.PUT("/:id/delay", middleware.RequireUserType(models.UserTypeDoctor, models.UserTypeReceptionist), appointmentHandler.Delay)
+				appointments.PUT("/:id/accept-shift", appointmentHandler.AcceptShift)
 			}
 
 			// Protected User Routes (Self-update allowed)

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"thakur-dental-clinic/backend/internal/config"
 	"thakur-dental-clinic/backend/internal/models"
 	"thakur-dental-clinic/backend/internal/repository"
@@ -54,6 +55,22 @@ type GoogleUserInfo struct {
 	Picture       string `json:"picture"`
 }
 
+// SplitFullGoogleName splits Google full name into first, middle, and last name
+func SplitFullGoogleName(fullName, givenName, familyName string) (string, string, string) {
+	parts := strings.Fields(strings.TrimSpace(fullName))
+	if len(parts) >= 3 {
+		firstName := parts[0]
+		middleName := strings.Join(parts[1:len(parts)-1], " ")
+		lastName := parts[len(parts)-1]
+		return firstName, middleName, lastName
+	} else if len(parts) == 2 {
+		return parts[0], "", parts[1]
+	} else if len(parts) == 1 {
+		return parts[0], "", ""
+	}
+	return givenName, "", familyName
+}
+
 // GetGoogleAuthURL returns the Google OAuth authorization URL
 func (s *AuthService) GetGoogleAuthURL(state string) string {
 	return s.googleConfig.AuthCodeURL(state)
@@ -91,12 +108,14 @@ func (s *AuthService) HandleGoogleCallback(code string) (*models.User, string, e
 			user = existingUser
 		} else if errors.Is(err, gorm.ErrRecordNotFound) {
 			// User doesn't exist, create new patient account
+			firstName, middleName, lastName := SplitFullGoogleName(userInfo.Name, userInfo.GivenName, userInfo.FamilyName)
 			user = &models.User{
-				Email:     userInfo.Email,
-				FirstName: userInfo.GivenName,
-				LastName:  userInfo.FamilyName,
-				UserType:  models.UserTypePatient,
-				IsActive:  true,
+				Email:      userInfo.Email,
+				FirstName:  firstName,
+				MiddleName: middleName,
+				LastName:   lastName,
+				UserType:   models.UserTypePatient,
+				IsActive:   true,
 			}
 
 			if err := s.userRepo.CreateUser(user); err != nil {
@@ -138,7 +157,7 @@ func (s *AuthService) HandleGoogleCallback(code string) (*models.User, string, e
 }
 
 // RegisterPatient registers a new patient with email and password
-func (s *AuthService) RegisterPatient(email, password, firstName, lastName, phone string) (*models.User, string, error) {
+func (s *AuthService) RegisterPatient(email, password, firstName, middleName, lastName, phone string) (*models.User, string, error) {
 	// Check if email already exists
 	if _, err := s.userRepo.GetUserByEmail(email); err == nil {
 		return nil, "", errors.New("email already exists")
@@ -155,6 +174,7 @@ func (s *AuthService) RegisterPatient(email, password, firstName, lastName, phon
 		Email:        email,
 		PasswordHash: &hashedPassword,
 		FirstName:    firstName,
+		MiddleName:   middleName,
 		LastName:     lastName,
 		Phone:        phone,
 		UserType:     models.UserTypePatient,
@@ -234,7 +254,7 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 }
 
 // CreateStaffUser creates a new doctor or receptionist (admin only)
-func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, firstName, lastName, password string, userType models.UserType, isAdmin bool) (*models.User, string, error) {
+func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, firstName, middleName, lastName, password string, userType models.UserType, isAdmin bool) (*models.User, string, error) {
 	// Verify admin
 	admin, err := s.userRepo.GetUserByID(adminID)
 	if err != nil {
@@ -265,6 +285,7 @@ func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, firstName, lastN
 		Email:        email,
 		PasswordHash: &hashedPassword,
 		FirstName:    firstName,
+		MiddleName:   middleName,
 		LastName:     lastName,
 		UserType:     userType,
 		IsAdmin:      isAdmin,

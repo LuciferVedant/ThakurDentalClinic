@@ -46,3 +46,31 @@ func (r *AppointmentRepository) ListAll() ([]models.Appointment, error) {
 	err := r.db.Preload("Patient").Preload("Doctor").Order("date_time desc").Find(&appointments).Error
 	return appointments, err
 }
+
+func (r *AppointmentRepository) GetLastAppointmentForDay() (*models.Appointment, error) {
+	var appointment models.Appointment
+	// Get the last appointment created today
+	err := r.db.Where("date_time >= CURRENT_DATE").Order("queue_number desc").First(&appointment).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &appointment, nil
+}
+
+func (r *AppointmentRepository) HasPatientAppointmentToday(patientID uuid.UUID) (bool, error) {
+	var count int64
+	err := r.db.Model(&models.Appointment{}).
+		Where("patient_id = ? AND date_time >= CURRENT_DATE AND date_time < CURRENT_DATE + INTERVAL '1 day'", patientID).
+		Count(&count).Error
+	return count > 0, err
+}
+
+func (r *AppointmentRepository) GetSubsequentAppointmentsForDoctorToday(doctorID uuid.UUID, queueNumber int) ([]models.Appointment, error) {
+	var appointments []models.Appointment
+	err := r.db.Where("doctor_id = ? AND date_time >= CURRENT_DATE AND date_time < CURRENT_DATE + INTERVAL '1 day' AND queue_number > ? AND status IN ('scheduled', 'arrived')", doctorID, queueNumber).Order("queue_number asc").Find(&appointments).Error
+	return appointments, err
+}
+

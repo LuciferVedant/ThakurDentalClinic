@@ -25,12 +25,13 @@ func NewUserHandler(userRepo *repository.UserRepository, authService *services.A
 
 // CreateStaffRequest represents the request to create a staff member
 type CreateStaffRequest struct {
-	Email     string `json:"email" binding:"required,email"`
-	FirstName string `json:"firstName" binding:"required"`
-	LastName  string `json:"lastName" binding:"required"`
-	Password  string `json:"password" binding:"required,min=8"`
-	UserType  string `json:"userType" binding:"required,oneof=doctor receptionist"`
-	IsAdmin   bool   `json:"isAdmin"`
+	Email      string `json:"email" binding:"required,email"`
+	FirstName  string `json:"firstName" binding:"required"`
+	MiddleName string `json:"middleName"`
+	LastName   string `json:"lastName" binding:"required"`
+	Password   string `json:"password" binding:"required,min=8"`
+	UserType   string `json:"userType" binding:"required,oneof=doctor receptionist"`
+	IsAdmin    bool   `json:"isAdmin"`
 }
 
 // CreateStaff creates a new doctor or receptionist
@@ -52,6 +53,7 @@ func (h *UserHandler) CreateStaff(c *gin.Context) {
 		userID,
 		req.Email,
 		req.FirstName,
+		req.MiddleName,
 		req.LastName,
 		req.Password,
 		userType,
@@ -117,6 +119,7 @@ func (h *UserHandler) GetUser(c *gin.Context) {
 // UpdateUserRequest represents the request to update a user
 type UpdateUserRequest struct {
 	FirstName      *string `json:"firstName"`
+	MiddleName     *string `json:"middleName"`
 	LastName       *string `json:"lastName"`
 	Age            *int    `json:"age"`
 	Gender         *string `json:"gender"`
@@ -166,6 +169,9 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	// Update fields if provided
 	if req.FirstName != nil {
 		user.FirstName = *req.FirstName
+	}
+	if req.MiddleName != nil {
+		user.MiddleName = *req.MiddleName
 	}
 	if req.LastName != nil {
 		user.LastName = *req.LastName

@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  postgres:
+  db:
     image: postgres:15-alpine
-    container_name: thakur_dental_postgres
+    container_name: thakur_clinic_db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -13,10 +13,44 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U postgres -d thakur_dental_clinic"]
+      interval: 5s
       timeout: 5s
       retries: 5
 
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: thakur_clinic_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    environment:
+      - DB_HOST=db
+      - SERVER_PORT=8080
+      - FRONTEND_URL=http://localhost:5173
+      # Note: Make sure to inject JWT_SECRET and GOOGLE_CLIENT_ID securely in production
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/uploads:/app/uploads # Persist user uploads (e.g. prescriptions)
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=http://localhost:8080/api
+        - VITE_GOOGLE_CLIENT_ID=518525538270-u6omr7kggi5mg1sfalkc0dm71ucg3udv.apps.googleusercontent.com
+    container_name: thakur_clinic_frontend
+    ports:
+      - "5173:80" # Maps local port 5173 to Nginx port 80
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
+

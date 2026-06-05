@@ -104,3 +104,138 @@ func (h *AppointmentHandler) UploadPrescription(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
 }
+
+func (h *AppointmentHandler) MarkArrived(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	appointment, err := h.appointmentService.MarkArrived(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to mark as arrived"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
+}
+
+func (h *AppointmentHandler) StartConsultation(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	appointment, err := h.appointmentService.StartConsultation(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to start consultation"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
+}
+
+func (h *AppointmentHandler) Complete(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	var input struct {
+		PrescriptionURLs string `json:"prescriptionUrls"`
+		PrescriptionType string `json:"prescriptionType"`
+		PaymentMethod    string `json:"paymentMethod"`
+		Notes            string `json:"notes"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	appointment, err := h.appointmentService.CompleteAppointment(id, input.PrescriptionURLs, input.PrescriptionType, input.PaymentMethod, input.Notes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to complete appointment"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
+}
+
+type ReassignDoctorRequest struct {
+	DoctorID uuid.UUID `json:"doctorId" binding:"required"`
+}
+
+func (h *AppointmentHandler) Reassign(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	var req ReassignDoctorRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	appointment, err := h.appointmentService.ReassignDoctor(id, req.DoctorID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
+}
+
+type DelayAppointmentRequest struct {
+	DelayMinutes int `json:"delayMinutes"`
+}
+
+func (h *AppointmentHandler) Delay(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	var req DelayAppointmentRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	appointment, err := h.appointmentService.DelayAppointment(id, req.DelayMinutes)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
+}
+
+func (h *AppointmentHandler) AcceptShift(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid appointment ID"})
+		return
+	}
+
+	appointment, err := h.appointmentService.AcceptShift(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"appointment": appointment})
+}
+

@@ -5,6 +5,7 @@ import { logout } from '../store/slices/authSlice';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeSwitcher from './ThemeSwitcher';
 import { useTranslation } from 'react-i18next';
+import SSEClient from './common/SSEClient';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+      {isAuthenticated && <SSEClient />}
       {/* Header */}
       <header className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b border-transparent dark:border-gray-800 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -46,7 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
                 <div className="text-right hidden sm:block">
                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {user.firstName} {user.lastName}
+                    {user.firstName} {user.middleName ? `${user.middleName} ` : ''}{user.lastName}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
                     {user.userType} {user.isAdmin && t('dashboard.admin')}

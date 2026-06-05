@@ -20,6 +20,7 @@ type User struct {
 	Email          string     `gorm:"uniqueIndex;not null" json:"email"`
 	PasswordHash   *string    `gorm:"type:varchar(255)" json:"-"`
 	FirstName      string     `gorm:"not null" json:"firstName"`
+	MiddleName     string     `gorm:"type:varchar(100)" json:"middleName,omitempty"`
 	LastName       string     `gorm:"not null" json:"lastName"`
 	Age            int        `json:"age"`
 	Gender         string     `gorm:"type:varchar(20)" json:"gender"`
@@ -29,6 +30,9 @@ type User struct {
 	UserType       UserType   `gorm:"type:varchar(20);not null" json:"userType"`
 	IsAdmin        bool       `gorm:"default:false" json:"isAdmin"`
 	IsActive       bool       `gorm:"default:true" json:"isActive"`
+	IsOnLeave      bool       `gorm:"default:false" json:"isOnLeave"`      // For Doctors
+	Specialization string     `json:"specialization,omitempty"`            // For Doctors
+	AbhaID         string     `gorm:"type:varchar(50)" json:"abhaId,omitempty"` // ABDM Placeholder
 	CreatedBy      *uuid.UUID `gorm:"type:uuid" json:"createdBy,omitempty"`
 	CreatedAt      time.Time  `json:"createdAt"`
 	UpdatedAt      time.Time  `json:"updatedAt"`

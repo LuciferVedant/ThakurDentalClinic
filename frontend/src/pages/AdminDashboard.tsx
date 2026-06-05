@@ -4,11 +4,13 @@ import Layout from '../components/Layout';
 import api from '../utils/api';
 import AdminBlogList from './AdminBlogList';
 import { useTranslation } from 'react-i18next';
+import { useAppSelector } from '../store/hooks';
 
 interface User {
   id: string;
   email: string;
   firstName: string;
+  middleName?: string;
   lastName: string;
   userType: string;
   isAdmin: boolean;
@@ -16,7 +18,7 @@ interface User {
 }
 
 const AdminDashboard: React.FC = () => {
-  // const { user } = useAppSelector((state) => state.auth); // Unused
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [userType, setUserType] = useState<'doctor' | 'receptionist'>('doctor');
@@ -26,6 +28,7 @@ const AdminDashboard: React.FC = () => {
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
+    middleName: '',
     lastName: '',
     password: '',
     isAdmin: false,
@@ -59,7 +62,7 @@ const AdminDashboard: React.FC = () => {
       });
 
       setCredentials(response.data.credentials);
-      setFormData({ email: '', firstName: '', lastName: '', password: '', isAdmin: false });
+      setFormData({ email: '', firstName: '', middleName: '', lastName: '', password: '', isAdmin: false });
       fetchUsers();
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to create staff account');
@@ -71,6 +74,22 @@ const AdminDashboard: React.FC = () => {
   const handleCloseCredentials = () => {
     setCredentials(null);
     setShowCreateModal(false);
+  };
+
+  const handleToggleStatus = async (userToUpdate: User) => {
+    const action = userToUpdate.isActive ? 'deactivate' : 'reactivate';
+    if (!window.confirm(`Are you sure you want to ${action} this staff account?`)) {
+      return;
+    }
+
+    try {
+      await api.put(`/users/${userToUpdate.id}`, {
+        isActive: !userToUpdate.isActive,
+      });
+      fetchUsers();
+    } catch (err: any) {
+      alert(err.response?.data?.error || `Failed to ${action} user status`);
+    }
   };
 
   const generateRandomPassword = () => {
@@ -165,6 +184,7 @@ const AdminDashboard: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.email')}</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.role')}</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{t('dashboard.status')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white/50 dark:bg-gray-800/50 divide-y divide-gray-200 dark:divide-gray-700">
@@ -172,7 +192,7 @@ const AdminDashboard: React.FC = () => {
                   <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {user.firstName} {user.lastName}
+                        {user.firstName} {user.middleName ? `${user.middleName} ` : ''}{user.lastName}
                         {user.isAdmin && (
                           <span className="ml-2 px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
                             Admin
@@ -192,6 +212,22 @@ const AdminDashboard: React.FC = () => {
                       }`}>
                         {user.isActive ? t('dashboard.active') : t('dashboard.inactive')}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {currentUser && currentUser.id !== user.id ? (
+                        <button
+                          onClick={() => handleToggleStatus(user)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            user.isActive
+                              ? 'bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-400'
+                              : 'bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400'
+                          }`}
+                        >
+                          {user.isActive ? 'Deactivate' : 'Reactivate'}
+                        </button>
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500 text-xs italic">Self</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -253,6 +289,16 @@ const AdminDashboard: React.FC = () => {
                   required
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Middle Name <span className="text-gray-500 text-xs">(Optional)</span></label>
+                <input
+                  type="text"
+                  value={formData.middleName}
+                  onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                 />
               </div>

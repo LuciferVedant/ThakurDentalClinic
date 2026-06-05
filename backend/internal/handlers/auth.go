@@ -74,11 +74,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 // RegisterPatient handles patient registration
 type RegisterPatientRequest struct {
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password" binding:"required,min=8"`
-	FirstName string `json:"firstName" binding:"required"`
-	LastName  string `json:"lastName" binding:"required"`
-	Phone     string `json:"phone"`
+	Email      string `json:"email" binding:"required,email"`
+	Password   string `json:"password" binding:"required,min=8"`
+	FirstName  string `json:"firstName" binding:"required"`
+	MiddleName string `json:"middleName"`
+	LastName   string `json:"lastName" binding:"required"`
+	Phone      string `json:"phone"`
 }
 
 func (h *AuthHandler) RegisterPatient(c *gin.Context) {
@@ -88,7 +89,7 @@ func (h *AuthHandler) RegisterPatient(c *gin.Context) {
 		return
 	}
 
-	user, token, err := h.authService.RegisterPatient(req.Email, req.Password, req.FirstName, req.LastName, req.Phone)
+	user, token, err := h.authService.RegisterPatient(req.Email, req.Password, req.FirstName, req.MiddleName, req.LastName, req.Phone)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

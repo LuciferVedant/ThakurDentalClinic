@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
 import AppointmentList from '../components/appointments/AppointmentList';
@@ -6,18 +7,40 @@ import ProfileCard from '../components/profile/ProfileCard';
 import { useTranslation } from 'react-i18next';
 
 const DoctorDashboard: React.FC = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, token } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
+  const [appointments, setAppointments] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${API_URL}/appointments`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAppointments(response.data.appointments || []);
+      } catch (err) {
+        console.error('Failed to fetch stats');
+      }
+    };
+    fetchStats();
+  }, [token]);
+
+  const todayStr = new Date().toDateString();
+  const todaysPatients = appointments.filter(a => new Date(a.dateTime).toDateString() === todayStr).length;
+  const totalPatients = new Set(appointments.map(a => a.patientId)).size;
+  const pending = appointments.filter(a => ['scheduled', 'arrived', 'in-consultation'].includes(a.status)).length;
+  const completed = appointments.filter(a => a.status === 'completed').length;
 
   return (
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 transition-colors">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
-                Dr. {user?.firstName} {user?.lastName}
+                Dr. {user?.firstName} {user?.middleName ? `${user?.middleName} ` : ''}{user?.lastName}
               </h2>
               <p className="text-gray-600 dark:text-gray-300">{t('dashboard.managePatients')}</p>
               {user?.isAdmin && (
@@ -26,14 +49,11 @@ const DoctorDashboard: React.FC = () => {
                 </span>
               )}
             </div>
-            {/* Optional: Add Profile Edit Button or Profile Card here or below */}
           </div>
         </div>
-        
+
         {/* Profile Section */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transition-colors">
-             <ProfileCard />
-        </div>
+        <ProfileCard />
 
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -41,7 +61,7 @@ const DoctorDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-sm font-medium">{t('dashboard.todaysPatients')}</p>
-                <p className="text-3xl font-bold mt-2">0</p>
+                <p className="text-3xl font-bold mt-2">{todaysPatients}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +75,7 @@ const DoctorDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-sm font-medium">{t('dashboard.totalPatientsDoc')}</p>
-                <p className="text-3xl font-bold mt-2">0</p>
+                <p className="text-3xl font-bold mt-2">{totalPatients}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -69,7 +89,7 @@ const DoctorDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 text-sm font-medium">{t('dashboard.pending')}</p>
-                <p className="text-3xl font-bold mt-2">0</p>
+                <p className="text-3xl font-bold mt-2">{pending}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,7 +103,7 @@ const DoctorDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-pink-100 text-sm font-medium">{t('dashboard.completed')}</p>
-                <p className="text-3xl font-bold mt-2">0</p>
+                <p className="text-3xl font-bold mt-2">{completed}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

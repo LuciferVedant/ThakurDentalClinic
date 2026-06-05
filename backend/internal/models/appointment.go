@@ -21,8 +21,17 @@ type Appointment struct {
 	DoctorID         uuid.UUID         `gorm:"type:uuid;not null" json:"doctorId"`
 	DateTime         time.Time         `gorm:"not null" json:"dateTime"`
 	Status           AppointmentStatus `gorm:"type:varchar(20);default:'scheduled'" json:"status"`
+	QueueNumber      int               `gorm:"not null" json:"queueNumber"`
+	EstimatedStartTime time.Time       `gorm:"not null" json:"estimatedStartTime"`
+	ActualStartTime  *time.Time        `json:"actualStartTime,omitempty"`
+	ActualEndTime    *time.Time        `json:"actualEndTime,omitempty"`
 	PrescriptionURLs string            `gorm:"type:text" json:"prescriptionUrls"` // JSON array of strings
 	Notes            string            `gorm:"type:text" json:"notes"`
+	PaymentStatus    string            `gorm:"type:varchar(20);default:'pending'" json:"paymentStatus"` // pending, paid
+	PaymentMethod    string            `gorm:"type:varchar(20)" json:"paymentMethod"` // cash, online
+	PrescriptionType string            `gorm:"type:varchar(20)" json:"prescriptionType"` // manual, digital
+	ReminderSent     bool              `gorm:"default:false" json:"reminderSent"`
+	ShiftAccepted    bool              `gorm:"default:true" json:"shiftAccepted"`
 	CreatedAt        time.Time         `json:"createdAt"`
 	UpdatedAt        time.Time         `json:"updatedAt"`
 

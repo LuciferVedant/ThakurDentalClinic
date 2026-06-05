@@ -21,6 +21,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [middleName, setMiddleName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
 
@@ -54,6 +55,7 @@ const LoginPage: React.FC = () => {
     setPassword("");
     setConfirmPassword("");
     setFirstName("");
+    setMiddleName("");
     setLastName("");
     setPhone("");
   }, [dispatch, activeTab, isLogin]);
@@ -70,7 +72,7 @@ const LoginPage: React.FC = () => {
       return;
     }
     await dispatch(
-      registerPatient({ email, password, firstName, lastName, phone })
+      registerPatient({ email, password, firstName, middleName, lastName, phone })
     );
   };
 
@@ -237,16 +239,30 @@ const LoginPage: React.FC = () => {
                           />
                         </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-foreground mb-1">
-                          {t('login.phoneNumber')}
-                        </label>
-                        <input
-                          type="tel"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
-                        />
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('login.middleName')}
+                          </label>
+                          <input
+                            type="text"
+                            value={middleName}
+                            onChange={(e) => setMiddleName(e.target.value)}
+                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-foreground mb-1">
+                            {t('login.phoneNumber')}
+                          </label>
+                          <input
+                            type="tel"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                          />
+                        </div>
                       </div>
                     </>
                   )}

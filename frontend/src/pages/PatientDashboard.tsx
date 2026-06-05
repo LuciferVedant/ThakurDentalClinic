@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useAppSelector } from '../store/hooks';
 import Layout from '../components/Layout';
 import ProfileCard from '../components/profile/ProfileCard';
@@ -6,14 +7,78 @@ import AppointmentList from '../components/appointments/AppointmentList';
 import { useTranslation } from 'react-i18next';
 
 const PatientDashboard: React.FC = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, token } = useAppSelector((state) => state.auth);
   const { t } = useTranslation();
+  const [isBooking, setIsBooking] = useState(false);
+  const [slot, setSlot] = useState('morning');
+  const [notes, setNotes] = useState('');
+  const [doctors, setDoctors] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const [appointments, setAppointments] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const API_URL = import.meta.env.VITE_API_URL;
+        const [docsRes, appsRes] = await Promise.all([
+          axios.get(`${API_URL}/users?userType=doctor&isActive=true`, { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get(`${API_URL}/appointments`, { headers: { Authorization: `Bearer ${token}` } })
+        ]);
+        setDoctors(docsRes.data.users || []);
+        setAppointments(appsRes.data.appointments || []);
+      } catch (err) {
+        console.error('Failed to fetch dashboard data');
+      }
+    };
+    fetchData();
+  }, [token]);
+
+  const handleBook = async () => {
+    if (doctors.length === 0) {
+      alert('No doctors available at the moment.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+      // We pick the first doctor for now as per "no need to choose doctor"
+      const doctorId = doctors[0].id;
+
+      // Determine time based on slot
+      const dateTime = new Date();
+      if (slot === 'morning') dateTime.setHours(10, 0, 0);
+      else if (slot === 'afternoon') dateTime.setHours(14, 0, 0);
+      else dateTime.setHours(17, 0, 0);
+
+      await axios.post(`${API_URL}/appointments`, {
+        doctorId,
+        dateTime: dateTime.toISOString(),
+        notes
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      alert('Appointment booked successfully!');
+      setIsBooking(false);
+      window.location.reload(); // Quick refresh to update list
+    } catch (err: any) {
+      alert(err.response?.data?.error || 'Failed to book appointment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const upcomingCount = appointments.filter(a => ['scheduled', 'arrived', 'in-consultation'].includes(a.status)).length;
+  const totalVisits = appointments.filter(a => a.status === 'completed').length;
+  const nextApp = appointments.find(a => ['scheduled', 'arrived', 'in-consultation'].includes(a.status));
 
   return (
     <Layout>
       <div className="space-y-6">
         {/* Welcome Section */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 transition-colors">
           <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
             Welcome back, {user?.firstName}!
           </h2>
@@ -26,7 +91,7 @@ const PatientDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-100 text-sm font-medium">{t('dashboard.upcomingAppointments')}</p>
-                <p className="text-3xl font-bold mt-2">0</p>
+                <p className="text-3xl font-bold mt-2">{upcomingCount}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +105,7 @@ const PatientDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-100 text-sm font-medium">{t('dashboard.totalVisits')}</p>
-                <p className="text-3xl font-bold mt-2">0</p>
+                <p className="text-3xl font-bold mt-2">{totalVisits}</p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -54,7 +119,9 @@ const PatientDashboard: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-purple-100 text-sm font-medium">{t('dashboard.nextCheckup')}</p>
-                <p className="text-lg font-semibold mt-2">{t('dashboard.notScheduled')}</p>
+                <p className="text-lg font-semibold mt-2">
+                  {nextApp ? new Date(nextApp.dateTime).toLocaleDateString() : t('dashboard.notScheduled')}
+                </p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,24 +143,60 @@ const PatientDashboard: React.FC = () => {
         </section>
 
         {/* Book Appointment */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('dashboard.bookAppointment')}</h3>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">{t('dashboard.scheduleCheckup')}</p>
-          <button className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-            {t('dashboard.scheduleAppointment')}
-          </button>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100 dark:border-gray-700 transition-colors">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('dashboard.recentActivity')}</h3>
-          <div className="text-center py-12 text-gray-500">
-            <svg className="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <p>{t('dashboard.noRecentActivity')}</p>
+        {!isBooking ? (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-100  transition-colors">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{t('dashboard.bookAppointment')}</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">{t('dashboard.scheduleCheckup')}</p>
+            <button
+              onClick={() => setIsBooking(true)}
+              className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 text-white font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              {t('dashboard.scheduleAppointment')}
+            </button>
           </div>
-        </div>
+        ) : (
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-primary-100 dark:border-primary-900 transition-colors animate-fade-in">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Confirm Booking</h3>
+            <div className="space-y-4 max-w-md">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Time Slot</label>
+                <select
+                  value={slot}
+                  onChange={(e) => setSlot(e.target.value)}
+                  className="w-full p-3 rounded-xl border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                >
+                  <option value="morning">Morning (10:00 AM)</option>
+                  <option value="afternoon">Afternoon (2:00 PM)</option>
+                  <option value="evening">Evening (5:00 PM)</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notes for Doctor</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="e.g. Toothache, Regular Checkup..."
+                  className="w-full p-3 rounded-xl border border-gray-200 dark:bg-gray-700 dark:border-gray-600 dark:text-white min-h-[100px]"
+                />
+              </div>
+              <div className="flex gap-4 pt-4">
+                <button
+                  onClick={handleBook}
+                  disabled={loading}
+                  className="flex-1 py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-700 transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Booking...' : 'Confirm Token'}
+                </button>
+                <button
+                  onClick={() => setIsBooking(false)}
+                  className="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

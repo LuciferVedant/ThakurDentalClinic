@@ -34,6 +34,20 @@ func (r *UserRepository) GetUserByEmail(email string) (*models.User, error) {
 	return &user, err
 }
 
+// GetUserByPhone retrieves a user by phone number
+func (r *UserRepository) GetUserByPhone(phone string) (*models.User, error) {
+	var user models.User
+	err := r.db.Preload("OAuthAccounts").First(&user, "phone = ?", phone).Error
+	return &user, err
+}
+
+// GetUserByEmailOrPhone retrieves a user by email OR phone number
+func (r *UserRepository) GetUserByEmailOrPhone(identifier string) (*models.User, error) {
+	var user models.User
+	err := r.db.Preload("OAuthAccounts").First(&user, "email = ? OR phone = ?", identifier, identifier).Error
+	return &user, err
+}
+
 // GetUserByOAuthProvider retrieves a user by OAuth provider and provider user ID
 func (r *UserRepository) GetUserByOAuthProvider(provider, providerUserID string) (*models.User, error) {
 	var oauthAccount models.OAuthAccount

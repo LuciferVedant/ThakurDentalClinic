@@ -93,6 +93,19 @@ To test actual database behaviors (such as PostgreSQL timezone math and custom S
             `[DEMO REMINDER SENT] Patient: Rohan Kumar, Time: 12:30, Doctor: Dr. Ajay Thakur`
         *   *SSE Alert*: Dispatches `PRE_ARRIVAL_REMINDER` warning to the patient dashboard.
 
+### **Scenario 6: Phone & Email Signup/Login Verification**
+*   **Functionality Tested**: Patient registration and login options (email-only, phone-only, or both), staff registration validations, duplicate checks, and profile updating constraints.
+*   **Use Cases Verified**:
+    1.  **Patient Signup (Phone Only)**: Patient registers with a phone number and no email address. The system succeeds, assigning the identifier to the database.
+    2.  **Patient Signup (Email Only)**: Patient registers with an email address and no phone number. The system succeeds.
+    3.  **Patient Signup (Both)**: Patient registers with both an email and phone number. The system succeeds.
+    4.  **Patient Signup (Neither)**: Registering with neither email nor phone is blocked by validation, returning: `"At least one of email or phone number is required"`.
+    5.  **Staff Registration Constraints**: Creating a staff member with either email or phone missing is blocked by validation, enforcing both are required.
+    6.  **Already Registered (Conflict Check)**: Registering with an email or phone number that already exists returns a conflict warning to the user, suggesting they log in instead.
+    7.  **Profile Update Validation**:
+        *   Patients can update their profile, but clearing both fields returns a bad request.
+        *   Staff members attempting to clear either their email or phone number in profile update are blocked.
+
 ---
 
 ## 3. How to Run the Automated Tests
@@ -190,3 +203,26 @@ To test queue timing updates and live SSE warnings:
     - Verify the signup form includes a "Middle Name (Opt)" field arranged in a 2x2 grid.
     - Register a patient with a middle name. Verify the dashboard header and top navbar show the middle name cleanly.
     - Go to the Profile page, remove the middle name, and save. Verify the name renders with a single space and no double-space formatting errors.
+
+---
+
+### **Step 6: Verifying Phone & Email Signup/Login and Profile Rules**
+1.  **Patient Signup options**:
+    - Navigate to the signup form in Browser A.
+    - Attempt to sign up leaving both Email and Phone blank. Verify that inline validation errors block form submission and highlight the inputs in red.
+    - Fill only the Phone number (leaving Email blank) and register. Verify that registration completes successfully and logs you in.
+    - Log out, then try to sign up again with the exact same phone number. Verify that the backend returns a conflict error, which is displayed in the main alert box at the top of the form, advising you to log in.
+2.  **Patient Login options**:
+    - Go to the login tab in Browser A.
+    - Log in using the phone number you registered in the previous step. Verify that login succeeds.
+    - Open the edit profile screen, enter an email address, and click "Save Changes". Go back to view mode and verify it shows both email and phone.
+    - Edit profile again, erase the phone number (keeping email) and save. Verify the update succeeds.
+    - Erase both email and phone number in profile editing and save. Verify that a validation alert blocks the action.
+3.  **Staff Validation (Admin)**:
+    - Log in as the Admin Doctor in Browser B. Go to the Admin Dashboard.
+    - Click **"+ Add Staff"**.
+    - Fill in the staff creation form, but leave the phone field blank. Attempt to submit. Verify the browser/form blocks you, or the API rejects with a missing phone error.
+    - Fill in the phone field but leave the email field blank. Verify it blocks submission.
+    - Enter a valid email and phone number and submit. Verify that the credentials modal pops up showing the generated password.
+    - Log in with the newly created staff member in Browser C (or an incognito tab) using either their email or phone number.
+    - Once logged in, go to the Profile screen and click Edit Profile. Attempt to clear either the Email or Phone field and save. Verify the alert blocks the update, enforcing that both are required for staff.

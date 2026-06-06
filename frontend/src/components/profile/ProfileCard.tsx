@@ -11,6 +11,7 @@ const ProfileCard: React.FC = () => {
     firstName: user?.firstName || '',
     middleName: user?.middleName || '',
     lastName: user?.lastName || '',
+    email: user?.email || '',
     age: user?.age || '',
     gender: user?.gender || '',
     address: user?.address || '',
@@ -23,13 +24,36 @@ const ProfileCard: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(updateProfile({
-      ...formData,
-      age: formData.age ? Number(formData.age) : undefined,
-    }));
-    setIsEditing(false);
+    if (!user) return;
+    const isPatient = user.userType === 'patient';
+    const emailVal = formData.email.trim();
+    const phoneVal = formData.phone.trim();
+
+    if (isPatient) {
+      if (!emailVal && !phoneVal) {
+        alert("At least one of Email Address or Phone Number is required.");
+        return;
+      }
+    } else {
+      if (!emailVal || !phoneVal) {
+        alert("Both Email Address and Phone Number are required for staff members.");
+        return;
+      }
+    }
+
+    try {
+      await dispatch(updateProfile({
+        ...formData,
+        email: emailVal || undefined,
+        phone: phoneVal || undefined,
+        age: formData.age ? Number(formData.age) : undefined,
+      })).unwrap();
+      setIsEditing(false);
+    } catch (err: any) {
+      alert(err || "Failed to update profile");
+    }
   };
 
   if (!user) return null;
@@ -115,7 +139,17 @@ const ProfileCard: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
               />
             </div>
-             <div className="md:col-span-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+               <input
+                type="text"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors"
+              />
+            </div>
+            <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
                <input
                 type="text"
@@ -170,7 +204,7 @@ const ProfileCard: React.FC = () => {
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-              <p className="font-semibold text-gray-900 dark:text-white text-base">{user.email}</p>
+              <p className="font-semibold text-gray-900 dark:text-white text-base">{user.email || 'Not set'}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Age</p>

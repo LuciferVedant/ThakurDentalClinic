@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"thakur-dental-clinic/backend/internal/middleware"
 	"thakur-dental-clinic/backend/internal/services"
+	"thakur-dental-clinic/backend/internal/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -47,9 +48,9 @@ func (h *AuthHandler) GoogleCallback(c *gin.Context) {
 	})
 }
 
-// Login handles email/password login
+// Login handles email/phone/password login
 type LoginRequest struct {
-	Email    string `json:"email" binding:"required,email"`
+	Email    string `json:"email" binding:"required"` // Holds either email or phone number
 	Password string `json:"password" binding:"required"`
 }
 
@@ -74,7 +75,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 // RegisterPatient handles patient registration
 type RegisterPatientRequest struct {
-	Email      string `json:"email" binding:"required,email"`
+	Email      string `json:"email"`
 	Password   string `json:"password" binding:"required,min=8"`
 	FirstName  string `json:"firstName" binding:"required"`
 	MiddleName string `json:"middleName"`
@@ -86,6 +87,16 @@ func (h *AuthHandler) RegisterPatient(c *gin.Context) {
 	var req RegisterPatientRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.Email == "" && req.Phone == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "At least one of email or phone number is required"})
+		return
+	}
+
+	if req.Email != "" && !utils.IsValidEmail(req.Email) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
 		return
 	}
 

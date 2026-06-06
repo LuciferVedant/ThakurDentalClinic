@@ -31,6 +31,14 @@ func main() {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
 
+	// Raw SQL to drop NOT NULL constraint on users.email and add unique index on phone
+	if err := db.Exec("ALTER TABLE users ALTER COLUMN email DROP NOT NULL").Error; err != nil {
+		log.Printf("Warning: Failed to drop NOT NULL on email: %v", err)
+	}
+	if err := db.Exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_users_phone ON users(phone) WHERE phone IS NOT NULL AND phone <> ''").Error; err != nil {
+		log.Printf("Warning: Failed to create unique phone index: %v", err)
+	}
+
 	// Start background appointment reminder worker
 	cron.StartReminderWorker(db)
 
@@ -40,7 +48,7 @@ func main() {
 		// Admin user doesn't exist, create it
 		hashedPassword, _ := utils.HashPassword("admin123") // Default password, user should change it or login via Google
 		adminUser = models.User{
-			Email:        "vedrocks2000@gmail.com",
+			Email:        utils.StringPtr("vedrocks2000@gmail.com"),
 			PasswordHash: &hashedPassword,
 			FirstName:    "Vedant",
 			LastName:     "Khatri",

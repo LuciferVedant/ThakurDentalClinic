@@ -17,7 +17,7 @@ const (
 
 type User struct {
 	ID             uuid.UUID  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
-	Email          string     `gorm:"uniqueIndex;not null" json:"email"`
+	Email          *string    `gorm:"uniqueIndex" json:"email"`
 	PasswordHash   *string    `gorm:"type:varchar(255)" json:"-"`
 	FirstName      string     `gorm:"not null" json:"firstName"`
 	MiddleName     string     `gorm:"type:varchar(100)" json:"middleName,omitempty"`
@@ -26,7 +26,7 @@ type User struct {
 	Gender         string     `gorm:"type:varchar(20)" json:"gender"`
 	Address        string     `json:"address"`
 	ProfilePicture string     `json:"profilePicture"`
-	Phone          string     `json:"phone"`
+	Phone          *string    `gorm:"uniqueIndex" json:"phone"`
 	UserType       UserType   `gorm:"type:varchar(20);not null" json:"userType"`
 	IsAdmin        bool       `gorm:"default:false" json:"isAdmin"`
 	IsActive       bool       `gorm:"default:true" json:"isActive"`

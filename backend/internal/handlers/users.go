@@ -6,6 +6,7 @@ import (
 	"thakur-dental-clinic/backend/internal/models"
 	"thakur-dental-clinic/backend/internal/repository"
 	"thakur-dental-clinic/backend/internal/services"
+	"thakur-dental-clinic/backend/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -26,6 +27,7 @@ func NewUserHandler(userRepo *repository.UserRepository, authService *services.A
 // CreateStaffRequest represents the request to create a staff member
 type CreateStaffRequest struct {
 	Email      string `json:"email" binding:"required,email"`
+	Phone      string `json:"phone" binding:"required"`
 	FirstName  string `json:"firstName" binding:"required"`
 	MiddleName string `json:"middleName"`
 	LastName   string `json:"lastName" binding:"required"`
@@ -52,6 +54,7 @@ func (h *UserHandler) CreateStaff(c *gin.Context) {
 	user, tempPassword, err := h.authService.CreateStaffUser(
 		userID,
 		req.Email,
+		req.Phone,
 		req.FirstName,
 		req.MiddleName,
 		req.LastName,
@@ -126,6 +129,7 @@ type UpdateUserRequest struct {
 	Address        *string `json:"address"`
 	ProfilePicture *string `json:"profilePicture"`
 	Phone          *string `json:"phone"`
+	Email          *string `json:"email"`
 	IsActive       *bool   `json:"isActive"`
 }
 
@@ -188,9 +192,60 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 	if req.ProfilePicture != nil {
 		user.ProfilePicture = *req.ProfilePicture
 	}
-	if req.Phone != nil {
-		user.Phone = *req.Phone
+	
+	// Validate email and phone update logic
+	if req.Email != nil {
+		emailVal := *req.Email
+		if emailVal == "" && (req.Phone != nil && *req.Phone == "" || req.Phone == nil && (user.Phone == nil || *user.Phone == "")) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "At least one of email or phone number is required"})
+			return
+		}
+		
+		if user.UserType != models.UserTypePatient && emailVal == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Email is required for staff members"})
+			return
+		}
+		
+		if emailVal != "" {
+			if !utils.IsValidEmail(emailVal) {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email format"})
+				return
+			}
+			// Check uniqueness of new email
+			if existing, err := h.userRepo.GetUserByEmail(emailVal); err == nil && existing.ID != user.ID {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Email is already in use"})
+				return
+			}
+			user.Email = &emailVal
+		} else {
+			user.Email = nil
+		}
 	}
+	
+	if req.Phone != nil {
+		phoneVal := *req.Phone
+		if phoneVal == "" && (req.Email != nil && *req.Email == "" || req.Email == nil && (user.Email == nil || *user.Email == "")) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "At least one of email or phone number is required"})
+			return
+		}
+		
+		if user.UserType != models.UserTypePatient && phoneVal == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number is required for staff members"})
+			return
+		}
+		
+		if phoneVal != "" {
+			// Check uniqueness of new phone number
+			if existing, err := h.userRepo.GetUserByPhone(phoneVal); err == nil && existing.ID != user.ID {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number is already in use"})
+				return
+			}
+			user.Phone = &phoneVal
+		} else {
+			user.Phone = nil
+		}
+	}
+	
 	if req.IsActive != nil {
 		user.IsActive = *req.IsActive
 	}

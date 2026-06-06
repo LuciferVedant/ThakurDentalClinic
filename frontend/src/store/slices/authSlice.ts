@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export interface User {
   id: string;
-  email: string;
+  email?: string;
   firstName: string;
   middleName?: string;
   lastName: string;
@@ -62,7 +62,7 @@ export const loginWithGoogle = createAsyncThunk(
 
 export const registerPatient = createAsyncThunk(
   'auth/registerPatient',
-  async (userData: { email: string; password: string; firstName: string; middleName?: string; lastName: string; phone: string }, { rejectWithValue }) => {
+  async (userData: { email?: string; password: string; firstName: string; middleName?: string; lastName: string; phone?: string }, { rejectWithValue }) => {
     try {
       const response = await axios.post(`${API_URL}/auth/signup`, userData);
       return response.data;

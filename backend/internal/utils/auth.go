@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"regexp"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -64,4 +65,19 @@ func ValidateJWT(tokenString, jwtSecret string) (*Claims, error) {
 	}
 
 	return claims, nil
+}
+
+var emailRegex = regexp.MustCompile(`(?i)^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$`)
+
+// IsValidEmail checks if a string is a valid email address
+func IsValidEmail(email string) bool {
+	return emailRegex.MatchString(email)
+}
+
+// StringPtr returns a pointer to the string, or nil if the string is empty
+func StringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }

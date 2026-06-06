@@ -13,7 +13,9 @@ Our platform uses a unified authentication layer.
 
 ### **Authentication Logic**
 *   **Identity Provider (IdP)**:
-    1.  **Email/Password**: Standard login for staff and patients.
+    1.  **Email/Phone/Password**: Standard login for staff and patients.
+        *   **Patients**: Can sign up and log in using either Email, Phone number, or both. At least one contact method is required.
+        *   **Staff**: Admin doctors can register doctors or receptionists. For all staff members, both Email and Phone number are strictly required.
     2.  **Google OAuth**: Social login for quick patient access.
     3.  **[PLACEHOLDER] ABHA Login**: Future integration point for Login via ABHA Address/Number + OTP.
 *   **The JWT Token**: Regardless of the login method, the backend issues a standard **JWT (JSON Web Token)**. This token contains the `UserID` and `UserType` (Patient, Doctor, or Receptionist).
@@ -157,6 +159,8 @@ This section documents the exact technical changes made to the codebase to suppo
     *   `PrescriptionType`: Distinguishes between `manual` (photo) and `digital` (notes).
     *   `PrescriptionURLs`: JSON string array storing paths to uploaded images.
 *   **`User` Model**:
+    *   `Email` (*string): User's email address, stored as a nullable pointer. Required for staff; optional for patients. Standard unique index applies to non-nil values.
+    *   `Phone` (*string): User's phone number, stored as a nullable pointer. Required for staff; optional for patients. Standard unique index applies to non-nil values.
     *   `MiddleName` (string): Optional middle name. Populated manually or parsed from Google OAuth display names via split-name parsing.
     *   `IsActive` (bool): Activation toggle. If set to `false`, the staff member is locked out of logins and hidden from booking panels, preserving relational logs.
     *   `IsOnLeave` (bool): If true, doctor is excluded from booking availability.
@@ -197,6 +201,11 @@ This section documents the exact technical changes made to the codebase to suppo
     *   Provides an optional Middle Name field in the Create Staff modal.
 *   **`ProfileCard.tsx` & `LoginPage.tsx`**:
     *   Display and modify First, Middle, and Last name fields. Render names cleanly, filtering out extra spacing when the middle name is empty.
+    *   LoginPage supports logging in using either email or phone number.
+    *   Registration/Signup allows patients to sign up using only phone, only email, or both.
+    *   ProfileCard allows patients to edit email and phone, enforcing that at least one is present. For staff members, editing enforces that both email and phone are present.
+    *   LoginPage contains visual red asterisks (`*`) for all required fields in patient and staff modes.
+    *   LoginPage maps API response errors to individual fields (e.g. duplicate email conflicts map to Email, duplicate phone to Phone, invalid credentials to both Email/Phone and Password) to render inline red highlights and messages uniformly.
 
 ---
 

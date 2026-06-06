@@ -110,7 +110,7 @@ func (s *AuthService) HandleGoogleCallback(code string) (*models.User, string, e
 			// User doesn't exist, create new patient account
 			firstName, middleName, lastName := SplitFullGoogleName(userInfo.Name, userInfo.GivenName, userInfo.FamilyName)
 			user = &models.User{
-				Email:      userInfo.Email,
+				Email:      utils.StringPtr(userInfo.Email),
 				FirstName:  firstName,
 				MiddleName: middleName,
 				LastName:   lastName,
@@ -148,7 +148,11 @@ func (s *AuthService) HandleGoogleCallback(code string) (*models.User, string, e
 	}
 
 	// Generate JWT
-	jwtToken, err := utils.GenerateJWT(user.ID, user.Email, string(user.UserType), user.IsAdmin, s.cfg.JWTSecret)
+	var emailStr string
+	if user.Email != nil {
+		emailStr = *user.Email
+	}
+	jwtToken, err := utils.GenerateJWT(user.ID, emailStr, string(user.UserType), user.IsAdmin, s.cfg.JWTSecret)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to generate JWT: %w", err)
 	}
@@ -156,11 +160,24 @@ func (s *AuthService) HandleGoogleCallback(code string) (*models.User, string, e
 	return user, jwtToken, nil
 }
 
-// RegisterPatient registers a new patient with email and password
+// RegisterPatient registers a new patient with email and/or phone
 func (s *AuthService) RegisterPatient(email, password, firstName, middleName, lastName, phone string) (*models.User, string, error) {
+	if email == "" && phone == "" {
+		return nil, "", errors.New("at least one of email or phone number is required")
+	}
+
 	// Check if email already exists
-	if _, err := s.userRepo.GetUserByEmail(email); err == nil {
-		return nil, "", errors.New("email already exists")
+	if email != "" {
+		if _, err := s.userRepo.GetUserByEmail(email); err == nil {
+			return nil, "", errors.New("this email is already registered, please login")
+		}
+	}
+
+	// Check if phone already exists
+	if phone != "" {
+		if _, err := s.userRepo.GetUserByPhone(phone); err == nil {
+			return nil, "", errors.New("this phone number is already registered, please login")
+		}
 	}
 
 	// Hash password
@@ -171,12 +188,12 @@ func (s *AuthService) RegisterPatient(email, password, firstName, middleName, la
 
 	// Create user
 	user := &models.User{
-		Email:        email,
+		Email:        utils.StringPtr(email),
 		PasswordHash: &hashedPassword,
 		FirstName:    firstName,
 		MiddleName:   middleName,
 		LastName:     lastName,
-		Phone:        phone,
+		Phone:        utils.StringPtr(phone),
 		UserType:     models.UserTypePatient,
 		IsActive:     true,
 	}
@@ -186,11 +203,12 @@ func (s *AuthService) RegisterPatient(email, password, firstName, middleName, la
 	}
 
 	// Generate JWT
-	jwtToken, err := utils.GenerateJWT(user.ID, user.Email, string(user.UserType), user.IsAdmin, s.cfg.JWTSecret)
+	var emailStr string
+	if user.Email != nil {
+		emailStr = *user.Email
+	}
+	jwtToken, err := utils.GenerateJWT(user.ID, emailStr, string(user.UserType), user.IsAdmin, s.cfg.JWTSecret)
 	if err != nil {
-		// If JWT generation fails, we should probably delete the user or handle it.
-		// For now, logging the error and returning it is better than a generic 400.
-		// Ideally, we would use a transaction, but that requires refactoring repository to accept tx.
 		return nil, "", fmt.Errorf("user created but failed to generate token: %w", err)
 	}
 
@@ -222,9 +240,13 @@ func (s *AuthService) getGoogleUserInfo(accessToken string) (*GoogleUserInfo, er
 	return &userInfo, nil
 }
 
-// Login handles email/password login
-func (s *AuthService) Login(email, password string) (*models.User, string, error) {
-	user, err := s.userRepo.GetUserByEmail(email)
+// Login handles email/phone and password login
+func (s *AuthService) Login(identifier, password string) (*models.User, string, error) {
+	if identifier == "" {
+		return nil, "", errors.New("email or phone number is required")
+	}
+
+	user, err := s.userRepo.GetUserByEmailOrPhone(identifier)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, "", errors.New("invalid credentials")
@@ -245,7 +267,11 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 	}
 
 	// Generate JWT
-	jwtToken, err := utils.GenerateJWT(user.ID, user.Email, string(user.UserType), user.IsAdmin, s.cfg.JWTSecret)
+	var emailStr string
+	if user.Email != nil {
+		emailStr = *user.Email
+	}
+	jwtToken, err := utils.GenerateJWT(user.ID, emailStr, string(user.UserType), user.IsAdmin, s.cfg.JWTSecret)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to generate JWT: %w", err)
 	}
@@ -254,7 +280,7 @@ func (s *AuthService) Login(email, password string) (*models.User, string, error
 }
 
 // CreateStaffUser creates a new doctor or receptionist (admin only)
-func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, firstName, middleName, lastName, password string, userType models.UserType, isAdmin bool) (*models.User, string, error) {
+func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, phone, firstName, middleName, lastName, password string, userType models.UserType, isAdmin bool) (*models.User, string, error) {
 	// Verify admin
 	admin, err := s.userRepo.GetUserByID(adminID)
 	if err != nil {
@@ -269,9 +295,18 @@ func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, firstName, middl
 		return nil, "", errors.New("invalid user type")
 	}
 
+	if email == "" || phone == "" {
+		return nil, "", errors.New("both email and phone number are required for staff members")
+	}
+
 	// Check if email already exists
 	if _, err := s.userRepo.GetUserByEmail(email); err == nil {
 		return nil, "", errors.New("email already exists")
+	}
+
+	// Check if phone already exists
+	if _, err := s.userRepo.GetUserByPhone(phone); err == nil {
+		return nil, "", errors.New("phone number already exists")
 	}
 
 	// Hash password
@@ -282,11 +317,12 @@ func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, firstName, middl
 
 	// Create user
 	user := &models.User{
-		Email:        email,
+		Email:        utils.StringPtr(email),
 		PasswordHash: &hashedPassword,
 		FirstName:    firstName,
 		MiddleName:   middleName,
 		LastName:     lastName,
+		Phone:        utils.StringPtr(phone),
 		UserType:     userType,
 		IsAdmin:      isAdmin,
 		IsActive:     true,

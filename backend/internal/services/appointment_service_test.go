@@ -39,7 +39,7 @@ func SetupTestDB(t *testing.T) (*gorm.DB, func()) {
 func createTestUser(t *testing.T, db *gorm.DB, email, firstName, lastName string, userType models.UserType, isActive bool) *models.User {
 	u := &models.User{
 		ID:        uuid.New(),
-		Email:     email,
+		Email:     utils.StringPtr(email),
 		FirstName: firstName,
 		LastName:  lastName,
 		UserType:  userType,

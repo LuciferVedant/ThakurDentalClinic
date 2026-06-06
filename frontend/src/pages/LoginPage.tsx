@@ -26,6 +26,8 @@ const LoginPage: React.FC = () => {
   const [phone, setPhone] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+  const [uiErrors, setUiErrors] = useState<{ [key: string]: string }>({});
+  
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,6 +52,7 @@ const LoginPage: React.FC = () => {
 
   useEffect(() => {
     dispatch(clearError());
+    setUiErrors({});
     // Reset form when switching modes
     setEmail("");
     setPassword("");
@@ -60,19 +63,96 @@ const LoginPage: React.FC = () => {
     setPhone("");
   }, [dispatch, activeTab, isLogin]);
 
+  useEffect(() => {
+    if (error) {
+      const errStr = error.toLowerCase();
+      const newErrors: { [key: string]: string } = {};
+
+      if (errStr.includes("email is already registered") || errStr.includes("invalid email format")) {
+        newErrors.email = error;
+      } else if (errStr.includes("phone number is already registered")) {
+        newErrors.phone = error;
+      } else if (errStr.includes("invalid credentials")) {
+        newErrors.email = "Invalid email/phone or password";
+        newErrors.password = "Invalid email/phone or password";
+      } else if (errStr.includes("password")) {
+        newErrors.password = error;
+      } else if (errStr.includes("first name")) {
+        newErrors.firstName = error;
+      } else if (errStr.includes("last name")) {
+        newErrors.lastName = error;
+      } else {
+        newErrors.general = error;
+      }
+      setUiErrors(newErrors);
+    } else {
+      setUiErrors({});
+    }
+  }, [error]);
+
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: { [key: string]: string } = {};
+
+    if (!email.trim()) {
+      errors.email = "Email Address or Phone Number is required.";
+    }
+
+    if (!password) {
+      errors.password = "Password is required.";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setUiErrors(errors);
+      return;
+    }
+
+    setUiErrors({});
+    dispatch(clearError());
     await dispatch(loginWithCredentials({ email, password }));
   };
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: { [key: string]: string } = {};
+
+    if (!email.trim() && !phone.trim()) {
+      errors.email = "At least one of Email Address or Phone Number is required.";
+      errors.phone = "At least one of Email Address or Phone Number is required.";
+    }
+
+    if (!firstName.trim()) {
+      errors.firstName = "First name is required.";
+    }
+
+    if (!lastName.trim()) {
+      errors.lastName = "Last name is required.";
+    }
+
+    if (password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
+    }
+
     if (password !== confirmPassword) {
-      alert(t('login.passwordsDontMatch'));
+      errors.confirmPassword = t('login.passwordsDontMatch');
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setUiErrors(errors);
       return;
     }
+
+    setUiErrors({});
+    dispatch(clearError());
     await dispatch(
-      registerPatient({ email, password, firstName, middleName, lastName, phone })
+      registerPatient({ 
+        email: email.trim() || undefined, 
+        password, 
+        firstName, 
+        middleName, 
+        lastName, 
+        phone: phone.trim() || undefined 
+      })
     );
   };
 
@@ -153,9 +233,9 @@ const LoginPage: React.FC = () => {
 
           <div className="p-8">
             {/* Error Message */}
-            {error && (
+            {uiErrors.general && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-600">{error}</p>
+                <p className="text-sm text-red-600">{uiErrors.general}</p>
               </div>
             )}
 
@@ -216,27 +296,43 @@ const LoginPage: React.FC = () => {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            {t('login.firstName')}
+                            {t('login.firstName')} <span className="text-red-500 ml-0.5">*</span>
                           </label>
                           <input
                             type="text"
                             required
                             value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                            onChange={(e) => {
+                              setFirstName(e.target.value);
+                              if (uiErrors.firstName) setUiErrors(prev => ({ ...prev, firstName: "" }));
+                            }}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none ${
+                              uiErrors.firstName ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                            }`}
                           />
+                          {uiErrors.firstName && (
+                            <p className="mt-1 text-xs text-red-500">{uiErrors.firstName}</p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-foreground mb-1">
-                            {t('login.lastName')}
+                            {t('login.lastName')} <span className="text-red-500 ml-0.5">*</span>
                           </label>
                           <input
                             type="text"
                             required
                             value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                            onChange={(e) => {
+                              setLastName(e.target.value);
+                              if (uiErrors.lastName) setUiErrors(prev => ({ ...prev, lastName: "" }));
+                            }}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none ${
+                              uiErrors.lastName ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                            }`}
                           />
+                          {uiErrors.lastName && (
+                            <p className="mt-1 text-xs text-red-500">{uiErrors.lastName}</p>
+                          )}
                         </div>
                       </div>
                       
@@ -253,44 +349,85 @@ const LoginPage: React.FC = () => {
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-foreground mb-1">
+                          <label className="block text-sm font-medium text-foreground mb-1 flex items-center">
                             {t('login.phoneNumber')}
+                            <div className="relative group inline-block ml-1.5 align-middle">
+                              <span className="cursor-help inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground select-none">i</span>
+                              <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 bg-popover text-popover-foreground text-xs rounded-lg shadow-lg border border-border z-10 text-center font-normal">
+                                At least one of Email Address or Phone Number is required to sign up.
+                              </div>
+                            </div>
                           </label>
                           <input
                             type="tel"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                            onChange={(e) => {
+                              setPhone(e.target.value);
+                              if (uiErrors.phone) setUiErrors(prev => ({ ...prev, phone: "", email: "" }));
+                            }}
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none ${
+                              uiErrors.phone ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                            }`}
                           />
+                          {uiErrors.phone && (
+                            <p className="mt-1 text-xs text-red-500">{uiErrors.phone}</p>
+                          )}
                         </div>
                       </div>
                     </>
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-foreground mb-1">
-                      {t('login.emailAddress')}
+                    <label className="block text-sm font-medium text-foreground mb-1 flex items-center">
+                      {isLogin ? (
+                        <>
+                          {t('login.emailAddress')} / {t('login.phoneNumber')} <span className="text-red-500 ml-0.5">*</span>
+                        </>
+                      ) : (
+                        <>
+                          {t('login.emailAddress')}
+                          <div className="relative group inline-block ml-1.5 align-middle">
+                            <span className="cursor-help inline-flex items-center justify-center w-4 h-4 rounded-full bg-muted border border-border text-[10px] font-bold text-muted-foreground select-none">i</span>
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-48 p-2 bg-popover text-popover-foreground text-xs rounded-lg shadow-lg border border-border z-10 text-center font-normal">
+                              At least one of Email Address or Phone Number is required to sign up.
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </label>
                     <input
-                      type="email"
-                      required
+                      type={isLogin ? "text" : "email"}
+                      required={isLogin}
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (uiErrors.email) setUiErrors(prev => ({ ...prev, email: "", phone: "" }));
+                      }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none ${
+                        uiErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                      }`}
                     />
+                    {uiErrors.email && (
+                      <p className="mt-1 text-xs text-red-500">{uiErrors.email}</p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-foreground mb-1">
-                      {t('login.password')}
+                      {t('login.password')} <span className="text-red-500 ml-0.5">*</span>
                     </label>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
                         required
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none pr-10"
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (uiErrors.password) setUiErrors(prev => ({ ...prev, password: "" }));
+                        }}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none pr-10 ${
+                          uiErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                        }`}
                       />
                       <button
                         type="button"
@@ -300,20 +437,40 @@ const LoginPage: React.FC = () => {
                         {showPassword ? t('login.hide') : t('login.show')}
                       </button>
                     </div>
+                    {uiErrors.password && (
+                      <p className="mt-1 text-xs text-red-500">{uiErrors.password}</p>
+                    )}
                   </div>
 
                   {!isLogin && (
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1">
-                        {t('login.confirmPassword')}
+                        {t('login.confirmPassword')} <span className="text-red-500 ml-0.5">*</span>
                       </label>
-                      <input
-                        type="password"
-                        required
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
-                      />
+                      <div className="relative">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          required
+                          value={confirmPassword}
+                          onChange={(e) => {
+                            setConfirmPassword(e.target.value);
+                            if (uiErrors.confirmPassword) setUiErrors(prev => ({ ...prev, confirmPassword: "" }));
+                          }}
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none pr-10 ${
+                            uiErrors.confirmPassword ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                          }`}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
+                        >
+                          {showPassword ? t('login.hide') : t('login.show')}
+                        </button>
+                      </div>
+                      {uiErrors.confirmPassword && (
+                        <p className="mt-1 text-xs text-red-500">{uiErrors.confirmPassword}</p>
+                      )}
                     </div>
                   )}
 
@@ -346,28 +503,41 @@ const LoginPage: React.FC = () => {
               <form onSubmit={handleEmailLogin} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">
-                    {t('login.emailAddress')}
+                    {t('login.emailAddress')} / {t('login.phoneNumber')} <span className="text-red-500 ml-0.5">*</span>
                   </label>
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none"
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (uiErrors.email) setUiErrors(prev => ({ ...prev, email: "" }));
+                    }}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none ${
+                      uiErrors.email ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                    }`}
                   />
+                  {uiErrors.email && (
+                    <p className="mt-1 text-xs text-red-500">{uiErrors.email}</p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1">
-                    {t('login.password')}
+                    {t('login.password')} <span className="text-red-500 ml-0.5">*</span>
                   </label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       required
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none pr-10"
+                      onChange={(e) => {
+                        setPassword(e.target.value);
+                        if (uiErrors.password) setUiErrors(prev => ({ ...prev, password: "" }));
+                      }}
+                      className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary bg-background text-foreground outline-none pr-10 ${
+                        uiErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-border'
+                      }`}
                     />
                     <button
                       type="button"
@@ -377,6 +547,9 @@ const LoginPage: React.FC = () => {
                       {showPassword ? t('login.hide') : t('login.show')}
                     </button>
                   </div>
+                  {uiErrors.password && (
+                    <p className="mt-1 text-xs text-red-500">{uiErrors.password}</p>
+                  )}
                 </div>
 
                 <button

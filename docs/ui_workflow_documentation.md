@@ -64,13 +64,13 @@ sequenceDiagram
     %% Consultation & Completion Phase
     Doctor->>Patient: 6. Conducts diagnosis/exam
     Doctor->>+DB: 7. Clicks "Write Prescription" -> Fills modal<br/>(Uploads prescription photo OR types digital notes)
-    Doctor->>+DB: 8. Selects Payment Method (Cash/Online) -> Clicks "Complete Visit"
+    Doctor->>+DB: 8. Selects Payment Method (Cash/Online) -> Clicks "Complete Visit & Generate Bill"
     Note over DB: Sets ActualEndTime, status to 'completed', payment_status to 'paid'
     DB->>-Doctor: Bill Generated & Visit Finalized
     
     %% Post-Visit History
     Patient->>+DB: 9. Navigates to "Appointment History"
-    DB->>-Patient: 10. Downloads prescriptions and views payment log
+    DB->>-Patient: 10. Downloads prescriptions & reviews detailed invoice/payment receipt
 ```
 
 ### **Step 1: Booking (Patient)**
@@ -218,12 +218,15 @@ Follow these steps to verify the end-to-end implementation:
 ### **3. Doctor Flow**
 *   **Action**: Log in as a Doctor.
 *   **Action**: The patient will appear with a **"Write Prescription"** button.
-*   **Scribe**: Click the button, upload a photo or type notes, and select "Cash" payment.
-*   **Complete**: Click **"Complete Visit"**.
+*   **Scribe**: Click the button, upload a photo or type digital prescription notes, and select "Cash" payment.
+*   **Complete**: Click **"Complete Visit & Generate Bill"**.
 
 ### **4. History Flow**
 *   **Action**: Log in as the Patient again.
-*   **Verification**: The appointment now appears in **"Appointment History"**. Click **"View Records"** to see the prescription and payment details.
+*   **Verification**: The appointment now appears in **"Appointment History"**. Click **"View Records"** to verify:
+    - The digital prescription notes appear in the diagnosis section.
+    - The detailed **Invoice & Receipt Summary** card renders correctly (showing reference ID, ₹500 fee, Paid status, Cash/Online method, timestamp).
+    - The **"Print Receipt"** button works.
 
 ---
 

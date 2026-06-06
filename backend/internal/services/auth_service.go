@@ -2,16 +2,20 @@ package services
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"net/smtp"
 	"strings"
 	"thakur-dental-clinic/backend/internal/config"
 	"thakur-dental-clinic/backend/internal/models"
 	"thakur-dental-clinic/backend/internal/repository"
 	"thakur-dental-clinic/backend/internal/utils"
+	"time"
 
 	"github.com/google/uuid"
 	"golang.org/x/oauth2"
@@ -334,4 +338,155 @@ func (s *AuthService) CreateStaffUser(adminID uuid.UUID, email, phone, firstName
 	}
 
 	return user, password, nil
+}
+
+// ForgotPassword initiates the password reset workflow
+func (s *AuthService) ForgotPassword(identifier string) error {
+	if identifier == "" {
+		return errors.New("email or phone number is required")
+	}
+
+	user, err := s.userRepo.GetUserByEmailOrPhone(identifier)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("user not found")
+		}
+		return err
+	}
+
+	// Generate secure random token (32 bytes = 64 characters hex)
+	b := make([]byte, 32)
+	if _, err := rand.Read(b); err != nil {
+		return fmt.Errorf("failed to generate token: %w", err)
+	}
+	token := hex.EncodeToString(b)
+	expiresAt := time.Now().Add(15 * time.Minute)
+
+	user.PasswordResetToken = &token
+	user.PasswordResetTokenExpiresAt = &expiresAt
+
+	if err := s.userRepo.UpdateUser(user); err != nil {
+		return fmt.Errorf("failed to save reset token: %w", err)
+	}
+
+	// Link format: http://localhost:5173/reset-password?token=XYZ
+	resetLink := fmt.Sprintf("%s/reset-password?token=%s", s.cfg.FrontendURL, token)
+
+	emailSent := false
+	smsSent := false
+
+	// Send to Email if available
+	if user.Email != nil && *user.Email != "" {
+		if err := s.sendResetEmail(*user.Email, resetLink); err != nil {
+			// Log error but don't fail if we can fallback or if we just want to know
+			fmt.Printf("SMTP Email sending failed: %v\n", err)
+		} else {
+			emailSent = true
+		}
+	}
+
+	// Send to Phone if available
+	if user.Phone != nil && *user.Phone != "" {
+		if err := s.sendResetSMS(*user.Phone, resetLink); err != nil {
+			fmt.Printf("SMS sending failed: %v\n", err)
+		} else {
+			smsSent = true
+		}
+	}
+
+	if !emailSent && !smsSent {
+		return errors.New("failed to send reset link via email and phone number")
+	}
+
+	return nil
+}
+
+// VerifyResetToken validates a password reset token
+func (s *AuthService) VerifyResetToken(token string) error {
+	if token == "" {
+		return errors.New("token is required")
+	}
+
+	user, err := s.userRepo.GetUserByResetToken(token)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("invalid or expired password reset link")
+		}
+		return err
+	}
+
+	if user.PasswordResetTokenExpiresAt == nil || user.PasswordResetTokenExpiresAt.Before(time.Now()) {
+		return errors.New("invalid or expired password reset link")
+	}
+
+	return nil
+}
+
+// ResetPassword completes the password reset workflow
+func (s *AuthService) ResetPassword(token, newPassword string) error {
+	if token == "" {
+		return errors.New("token is required")
+	}
+	if len(newPassword) < 8 {
+		return errors.New("password must be at least 8 characters")
+	}
+
+	user, err := s.userRepo.GetUserByResetToken(token)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("invalid or expired password reset link")
+		}
+		return err
+	}
+
+	if user.PasswordResetTokenExpiresAt == nil || user.PasswordResetTokenExpiresAt.Before(time.Now()) {
+		return errors.New("invalid or expired password reset link")
+	}
+
+	// Hash new password
+	hashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+
+	user.PasswordHash = &hashedPassword
+	// Disable/invalidate the token immediately after use
+	user.PasswordResetToken = nil
+	user.PasswordResetTokenExpiresAt = nil
+
+	if err := s.userRepo.UpdateUser(user); err != nil {
+		return fmt.Errorf("failed to reset password: %w", err)
+	}
+
+	return nil
+}
+
+func (s *AuthService) sendResetEmail(to, link string) error {
+	// If SMTPHost is empty or set to localhost default without authentication config, we can print it to console/stdout in dev
+	if s.cfg.SMTPHost == "" || s.cfg.SMTPHost == "localhost" || s.cfg.SMTPUsername == "" {
+		fmt.Printf("[MOCK EMAIL SENT] To: %s, Link: %s\n", to, link)
+		return nil
+	}
+
+	// Real SMTP Mail Send
+	auth := smtp.PlainAuth("", s.cfg.SMTPUsername, s.cfg.SMTPPassword, s.cfg.SMTPHost)
+	msg := []byte("To: " + to + "\r\n" +
+		"Subject: Reset Your Password - Thakur Dental Clinic\r\n" +
+		"Content-Type: text/html; charset=UTF-8\r\n\r\n" +
+		"<html><body>" +
+		"<h3>Thakur Dental Clinic</h3>" +
+		"<p>You requested a password reset. Please click the link below to set a new password:</p>" +
+		"<p><a href=\"" + link + "\">Reset Password Link</a></p>" +
+		"<p>This link will expire in 15 minutes.</p>" +
+		"<p>If you did not request this, please ignore this email.</p>" +
+		"</body></html>")
+
+	addr := fmt.Sprintf("%s:%s", s.cfg.SMTPHost, s.cfg.SMTPPort)
+	return smtp.SendMail(addr, auth, s.cfg.SMTPFrom, []string{to}, msg)
+}
+
+func (s *AuthService) sendResetSMS(to, link string) error {
+	// Implement mock sending as per SMS plan
+	fmt.Printf("[MOCK SMS SENT] To: %s, Message: Hello! Use this link to reset your Thakur Dental Clinic password: %s. This link expires in 15 minutes.\n", to, link)
+	return nil
 }

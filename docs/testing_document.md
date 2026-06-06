@@ -106,6 +106,21 @@ To test actual database behaviors (such as PostgreSQL timezone math and custom S
         *   Patients can update their profile, but clearing both fields returns a bad request.
         *   Staff members attempting to clear either their email or phone number in profile update are blocked.
 
+### **Scenario 7: Forgot & Reset Password Recovery**
+*   **Functionality Tested**: Recovery link generation, expiration limits, multi-channel dispatch, token validation, password update, database token clearing, and new credential verification.
+*   **Use Cases Verified**:
+    1.  **Recovery Token Generation**: Requesting a password reset for a valid user generates a cryptographically secure token saved to the DB with a 15-minute expiration timestamp.
+    2.  **Invalid/Expired Token Checks**:
+        *   Requesting a reset with a non-existent token returns an error.
+        *   Requesting a reset with an expired token returns an error.
+    3.  **Password Reset Verification**:
+        *   Updating the password with a valid token changes the password hash in the DB.
+        *   Successfully executing the password update clears the token columns, preventing any replay/reuse.
+    4.  **Multi-channel Dispatch**:
+        *   If the user has only Email: Link sent to Email.
+        *   If the user has only Phone: Link sent to Phone (mocked to console in dev/test).
+        *   If the user has both: Link sent to both channels.
+
 ---
 
 ## 3. How to Run the Automated Tests
@@ -226,3 +241,32 @@ To test queue timing updates and live SSE warnings:
     - Enter a valid email and phone number and submit. Verify that the credentials modal pops up showing the generated password.
     - Log in with the newly created staff member in Browser C (or an incognito tab) using either their email or phone number.
     - Once logged in, go to the Profile screen and click Edit Profile. Attempt to clear either the Email or Phone field and save. Verify the alert blocks the update, enforcing that both are required for staff.
+
+---
+
+### **Step 7: Verifying Password Recovery Flow (Forgot & Reset Password)**
+1. **Access Link**:
+   - Go to `http://localhost:5173/login`.
+   - Under either the Patient or Staff login portal, verify there is a "Forgot Password?" hyperlink below the password field.
+   - Click the "Forgot Password?" link. Confirm it navigates to `/forgot-password`.
+2. **Submit Recovery Request**:
+   - In the "Forgot Password" page, verify there is a single required text input labeled "Email Address / Phone Number *" and an inline validation error if you attempt to submit a blank field.
+   - Enter a registered user's email or phone number (e.g. the admin's email `vedrocks2000@gmail.com`) and click **"Send Reset Link"**.
+   - Confirm that a clean, green success card is rendered telling you to check your inbox/messages.
+3. **Capture Reset Link**:
+   - In your terminal, look at the docker logs of the backend container: `docker compose logs backend`.
+   - Locate the printed output containing the generated reset URL (e.g. `[DEMO SMS] Sent reset password link to ...: http://localhost:5173/reset-password?token=...`).
+4. **Link Validation & Form Verification**:
+   - Copy the exact link and paste it into Browser A.
+   - Confirm it checks authorization and renders the "Reset Password" form.
+   - Try using a garbage/malformed token (e.g. `/reset-password?token=invalid123`). Confirm that the view displays an "Invalid or Expired Link" warning screen with a button to request a new link.
+5. **Submit New Password**:
+   - On the valid reset page, verify there is a password requirements warning and asterisks on "New Password *" and "Confirm New Password *".
+   - Confirm that both password inputs support show/hide password buttons.
+   - Enter matching passwords of at least 8 characters and submit.
+   - Confirm that a green "Password Reset Successful" success screen renders.
+6. **Replay Protection Test**:
+   - Paste the exact same valid link into the browser tab again.
+   - Confirm that the system immediately blocks access and renders the "Invalid or Expired Link" warning, confirming the token was cleared.
+7. **New Password Login**:
+   - Click "Go to Login" and log in with your updated credentials. Confirm the login completes successfully.

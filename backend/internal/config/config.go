@@ -23,6 +23,12 @@ type Config struct {
 
 	ServerPort  string
 	FrontendURL string
+
+	SMTPHost     string
+	SMTPPort     string
+	SMTPUsername string
+	SMTPPassword string
+	SMTPFrom     string
 }
 
 func Load() *Config {
@@ -44,6 +50,11 @@ func Load() *Config {
 		GoogleRedirectURL:  getEnv("GOOGLE_REDIRECT_URL", "http://localhost:5173/auth/google/callback"),
 		ServerPort:         getEnv("SERVER_PORT", "8080"),
 		FrontendURL:        getEnv("FRONTEND_URL", "http://localhost:5173"),
+		SMTPHost:           getEnv("SMTP_HOST", "localhost"),
+		SMTPPort:           getEnv("SMTP_PORT", "587"),
+		SMTPUsername:       getEnv("SMTP_USERNAME", ""),
+		SMTPPassword:       getEnv("SMTP_PASSWORD", ""),
+		SMTPFrom:           getEnv("SMTP_FROM", "info@thakurdental.com"),
 	}
 }
 

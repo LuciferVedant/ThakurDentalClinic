@@ -28,8 +28,9 @@ func main() {
 	log.Println("Database reset successfully.")
 
 	// Create Admin User
+	email := "vedrocks2000@gmail.com"
 	admin := &models.User{
-		Email:     "vedrocks2000@gmail.com",
+		Email:     &email,
 		FirstName: "Admin",
 		LastName:  "User",
 		UserType:  models.UserTypeDoctor,
@@ -37,7 +38,7 @@ func main() {
 		IsActive:  true,
 	}
 
-	log.Printf("Creating admin user: %s", admin.Email)
+	log.Printf("Creating admin user: %s", *admin.Email)
 
 	if err := db.Create(admin).Error; err != nil {
 		log.Fatalf("Failed to create admin user: %v", err)

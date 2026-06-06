@@ -48,6 +48,13 @@ func (r *UserRepository) GetUserByEmailOrPhone(identifier string) (*models.User,
 	return &user, err
 }
 
+// GetUserByResetToken retrieves a user by password reset token
+func (r *UserRepository) GetUserByResetToken(token string) (*models.User, error) {
+	var user models.User
+	err := r.db.Preload("OAuthAccounts").First(&user, "password_reset_token = ?", token).Error
+	return &user, err
+}
+
 // GetUserByOAuthProvider retrieves a user by OAuth provider and provider user ID
 func (r *UserRepository) GetUserByOAuthProvider(provider, providerUserID string) (*models.User, error) {
 	var oauthAccount models.OAuthAccount

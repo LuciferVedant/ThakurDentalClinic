@@ -310,5 +310,32 @@ When a consultation finishes and exceeds the default 35-minute slot, or when a r
 *   **Endpoint**: `PUT /api/appointments/:id/reassign` (secured by `RequireAdmin()` middleware).
 *   **UI Controls**: If the logged-in doctor is an Admin, a doctor selection dropdown is rendered on active queue items, pulling active staff lists from `GET /api/users?userType=doctor&isActive=true`. Choosing a doctor updates the assignment dynamically.
 
+---
+
+## 10. Password Recovery Workflow (Forgot & Reset Password)
+
+Our platform implements a highly secure, single-use password recovery mechanism.
+
+### **Recovery Logic**
+1. **Request Link**: 
+   - A user (Patient, Doctor, or Receptionist) clicks the "Forgot Password?" link on the login page.
+   - They enter their registered Email Address or Phone Number.
+   - The backend searches for a matching user. If found, a secure, cryptographically random, single-use reset token is generated.
+   - The token and its expiration time (set to 15 minutes in the future) are saved to the database:
+     - `PasswordResetToken` (string)
+     - `PasswordResetTokenExpiresAt` (time.Time)
+2. **Dispatch Link**:
+   - The backend sends a recovery link (`/reset-password?token=<token>`) via the configured communication channels:
+     - **Email**: Sent using standard SMTP parameters (configured via `.env` variables `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, `SMTP_FROM`).
+     - **SMS**: Mocked to the server console in development/testing (containing the exact link to allow local testing and validation).
+     - **Dual Delivery**: If the user has both Email and Phone number registered in their account, the link is sent to both channels simultaneously.
+3. **Link Validation**:
+   - When the user visits `/reset-password?token=...`, the frontend automatically issues a validation request to the backend `/api/auth/verify-reset-token` before rendering the form.
+   - If the token is invalid, expired, or has already been used, the user is presented with a clear error screen and a link to request a new recovery link.
+4. **Password Reset**:
+   - Upon submitting a new password (validated to be at least 8 characters), the frontend calls `/api/auth/reset-password`.
+   - The backend updates the user's password hash and immediately clears the token columns (`PasswordResetToken` and `PasswordResetTokenExpiresAt` set to `nil`), disabling the link forever.
+   - The user is shown a success screen and can return to the login page to sign in with their new credentials.
+
 
 

@@ -440,6 +440,17 @@ const LoginPage: React.FC = () => {
                     {uiErrors.password && (
                       <p className="mt-1 text-xs text-red-500">{uiErrors.password}</p>
                     )}
+                    {isLogin && (
+                      <div className="flex justify-end mt-1">
+                        <button
+                          type="button"
+                          onClick={() => navigate("/forgot-password")}
+                          className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {!isLogin && (
@@ -550,6 +561,15 @@ const LoginPage: React.FC = () => {
                   {uiErrors.password && (
                     <p className="mt-1 text-xs text-red-500">{uiErrors.password}</p>
                   )}
+                  <div className="flex justify-end mt-1">
+                    <button
+                      type="button"
+                      onClick={() => navigate("/forgot-password")}
+                      className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors duration-200"
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
                 </div>
 
                 <button

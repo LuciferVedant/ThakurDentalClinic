@@ -106,6 +106,30 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+export const forgotPassword = createAsyncThunk(
+  'auth/forgotPassword',
+  async (identifier: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/forgot-password`, { identifier });
+      return response.data.message;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to send reset link');
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  'auth/resetPassword',
+  async ({ token, password }: { token: string; password: string }, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(`${API_URL}/auth/reset-password`, { token, password });
+      return response.data.message;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.error || 'Failed to reset password');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -203,6 +227,30 @@ const authSlice = createSlice({
         localStorage.setItem('user', JSON.stringify(action.payload));
       })
       .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

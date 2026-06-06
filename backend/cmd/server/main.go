@@ -125,6 +125,9 @@ func main() {
 			auth.POST("/login", authHandler.Login)
 			auth.POST("/signup", authHandler.RegisterPatient)
 			auth.POST("/logout", authHandler.Logout)
+			auth.POST("/forgot-password", authHandler.ForgotPassword)
+			auth.POST("/verify-reset-token", authHandler.VerifyResetToken)
+			auth.POST("/reset-password", authHandler.ResetPassword)
 		}
 
 		// Public Blog Routes

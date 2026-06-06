@@ -19,6 +19,8 @@ type User struct {
 	ID             uuid.UUID  `gorm:"type:uuid;primary_key;default:gen_random_uuid()" json:"id"`
 	Email          *string    `gorm:"uniqueIndex" json:"email"`
 	PasswordHash   *string    `gorm:"type:varchar(255)" json:"-"`
+	PasswordResetToken           *string    `gorm:"uniqueIndex" json:"-"`
+	PasswordResetTokenExpiresAt  *time.Time `json:"-"`
 	FirstName      string     `gorm:"not null" json:"firstName"`
 	MiddleName     string     `gorm:"type:varchar(100)" json:"middleName,omitempty"`
 	LastName       string     `gorm:"not null" json:"lastName"`

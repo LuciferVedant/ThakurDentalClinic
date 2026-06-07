@@ -42,6 +42,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             
             {isAuthenticated && user && (
               <div className="flex items-center space-x-4">
+                {user.isAdmin && (
+                  <button
+                    onClick={() => {
+                      if (window.location.pathname.startsWith('/admin')) {
+                        navigate('/dashboard');
+                      } else {
+                        navigate('/admin');
+                      }
+                    }}
+                    className="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 dark:text-indigo-400 transition-colors"
+                  >
+                    {window.location.pathname.startsWith('/admin')
+                      ? 'Doctor Panel'
+                      : 'Admin Panel'}
+                  </button>
+                )}
                 <div className="flex items-center gap-2 mr-2">
                   <ThemeSwitcher />
                   <LanguageSwitcher />

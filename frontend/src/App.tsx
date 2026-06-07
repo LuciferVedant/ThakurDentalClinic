@@ -74,7 +74,7 @@ const DashboardRouter: React.FC = () => {
     case 'patient':
       return <PatientDashboard />;
     case 'doctor':
-      return user.isAdmin ? <AdminDashboard /> : <DoctorDashboard />;
+      return <DoctorDashboard />;
     case 'receptionist':
       return <ReceptionistDashboard />;
     default:

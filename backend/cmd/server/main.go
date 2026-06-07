@@ -193,13 +193,13 @@ func main() {
 
 			// Protected User Routes (Self-update allowed)
 			protected.PUT("/users/:id", userHandler.UpdateUser)
+			protected.GET("/users", userHandler.ListUsers)
 
 			// Admin-only routes
 			admin := protected.Group("")
 			admin.Use(middleware.RequireAdmin())
 			{
 				admin.POST("/users/staff", userHandler.CreateStaff)
-				admin.GET("/users", userHandler.ListUsers)
 				admin.GET("/users/:id", userHandler.GetUser)
 				admin.PUT("/users/:id/deactivate", userHandler.DeactivateUser)
 

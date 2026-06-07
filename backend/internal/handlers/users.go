@@ -79,6 +79,10 @@ func (h *UserHandler) CreateStaff(c *gin.Context) {
 
 // ListUsers returns a list of users
 func (h *UserHandler) ListUsers(c *gin.Context) {
+	// Check if requester is Admin
+	isAdminVal, existsAdmin := c.Get("isAdmin")
+	isAdmin := existsAdmin && isAdminVal.(bool)
+
 	var userType *models.UserType
 	var isActive *bool
 
@@ -92,10 +96,30 @@ func (h *UserHandler) ListUsers(c *gin.Context) {
 		isActive = &active
 	}
 
+	// Security Constraint: Non-admin users are ONLY allowed to list active doctors.
+	if !isAdmin {
+		if userType == nil || *userType != models.UserTypeDoctor {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Non-admin users can only list doctor profiles"})
+			return
+		}
+		// Force active doctors only for non-admins to prevent listing inactive ones
+		active := true
+		isActive = &active
+	}
+
 	users, err := h.userRepo.ListUsers(userType, isActive)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
+	}
+
+	// For security, remove password hashes and other sensitive fields for non-admins
+	if !isAdmin {
+		for i := range users {
+			users[i].PasswordHash = nil
+			users[i].PasswordResetToken = nil
+			users[i].PasswordResetTokenExpiresAt = nil
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"users": users})

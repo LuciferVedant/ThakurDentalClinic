@@ -14,6 +14,15 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
   const { user, token } = useAppSelector((state) => state.auth);
   const [isUploading, setIsUploading] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [activePrint, setActivePrint] = useState<'prescription' | 'receipt' | null>(null);
+
+  const handlePrint = (type: 'prescription' | 'receipt') => {
+    setActivePrint(type);
+    setTimeout(() => {
+      window.print();
+      setActivePrint(null);
+    }, 150);
+  };
 
   // Parse existing URLs
   const existingUrls = useMemo(() => {
@@ -76,8 +85,48 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-850 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col transition-colors border border-gray-100 dark:border-gray-850">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-750 flex justify-between items-center bg-gray-50 dark:bg-gray-800/40">
+      <style>{`
+        @media print {
+          body * {
+            visibility: hidden !important;
+            background: none !important;
+            box-shadow: none !important;
+          }
+          .printable-modal-content, .printable-modal-content * {
+            visibility: visible !important;
+          }
+          .printable-modal-content {
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            height: auto !important;
+            max-height: none !important;
+            overflow: visible !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            background: white !important;
+            color: black !important;
+          }
+          .no-print {
+            display: none !important;
+          }
+          .print-hide {
+            display: none !important;
+          }
+          h3, h4 {
+            color: black !important;
+            border-bottom: 1px solid #ddd !important;
+            padding-bottom: 6px !important;
+            margin-bottom: 12px !important;
+          }
+        }
+      `}</style>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col transition-colors border border-gray-100 dark:border-gray-700 printable-modal-content">
+        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/40 no-print">
           <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">Visit Records & Billing</h3>
             <p className="text-xs text-gray-500 mt-1">Token #{appointment.queueNumber} • {new Date(appointment.dateTime).toLocaleDateString()}</p>
@@ -91,7 +140,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
 
         <div className="p-6 overflow-y-auto flex-grow space-y-6 bg-gray-50/50 dark:bg-gray-900/20">
           {/* SECTION 1: PRESCRIPTION / CLINICAL NOTES */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm space-y-4">
+          <div className={`bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm space-y-4 ${activePrint === 'receipt' ? 'print-hide' : ''}`}>
             <h4 className="font-bold text-gray-900 dark:text-white flex items-center gap-2 border-b border-gray-100 dark:border-gray-700 pb-3">
               <svg className="w-5 h-5 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -110,7 +159,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
                       {currentUrls.map((url, idx) => (
                         <div key={idx} className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 p-2 rounded-lg border dark:border-gray-800">
                           <span className="text-xs truncate max-w-[250px] dark:text-gray-300">{url}</span>
-                          <button onClick={() => removeUrl(idx)} className="text-red-500 hover:text-red-750 text-xs font-semibold">Remove</button>
+                          <button onClick={() => removeUrl(idx)} className="text-red-500 hover:text-red-700 text-xs font-semibold">Remove</button>
                         </div>
                       ))}
                     </div>
@@ -126,7 +175,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
                   />
                 </div>
 
-                <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-750">
+                <div className="flex justify-end gap-2 pt-4 border-t dark:border-gray-700">
                   <button
                     type="button"
                     onClick={() => {
@@ -178,26 +227,35 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
                   )
                 )}
 
-                {canEdit && (
-                  <div className="flex justify-end pt-2">
+                <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700/50 mt-4 no-print">
+                  <button
+                    onClick={() => handlePrint('prescription')}
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-650 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V7a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                    </svg>
+                    Print Prescription
+                  </button>
+                  {canEdit && (
                     <button 
                       onClick={() => setEditMode(true)}
-                      className="text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1"
+                      className="px-3 py-1.5 bg-primary-50 dark:bg-primary-950/20 hover:bg-primary-100 dark:hover:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-lg text-xs font-bold transition flex items-center gap-1"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                       </svg>
                       Edit / Add Scans
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
           </div>
 
           {/* SECTION 2: BILLING & PAYMENT RECEIPT */}
           {appointment.status === 'completed' && (
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden">
+            <div className={`bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 shadow-sm relative overflow-hidden ${activePrint === 'prescription' ? 'print-hide' : ''}`}>
               <div className="absolute right-[-15px] top-[-10px] transform rotate-12 opacity-[0.03] dark:opacity-[0.05]">
                 <svg className="w-24 h-24 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -211,7 +269,7 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
                   </svg>
                   Invoice & Receipt Summary
                 </h4>
-                <span className="text-[10px] font-mono bg-gray-100 dark:bg-gray-750 px-2 py-1 rounded text-gray-600 dark:text-gray-300">
+                <span className="text-[10px] font-mono bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-600 dark:text-gray-300">
                   REC-{appointment.id.substring(0, 8).toUpperCase()}
                 </span>
               </div>
@@ -273,10 +331,10 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
                 </div>
               </div>
 
-              <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700 mt-4">
+              <div className="flex justify-end pt-4 border-t border-gray-100 dark:border-gray-700 mt-4 no-print">
                 <button
-                  onClick={() => window.print()}
-                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-650 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5"
+                  onClick={() => handlePrint('receipt')}
+                  className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-xs font-bold transition flex items-center gap-1.5"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V7a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
@@ -288,10 +346,10 @@ const PrescriptionModal: React.FC<PrescriptionModalProps> = ({ appointment, onCl
           )}
         </div>
 
-        <div className="p-6 border-t border-gray-100 dark:border-gray-750 bg-gray-50 dark:bg-gray-800/40 flex justify-end">
+        <div className="p-6 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 flex justify-end no-print">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-gray-900 hover:bg-black dark:bg-gray-750 dark:hover:bg-gray-650 text-white font-bold rounded-xl transition"
+            className="px-6 py-2.5 bg-gray-900 hover:bg-black dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-bold rounded-xl transition"
           >
             Close Records
           </button>

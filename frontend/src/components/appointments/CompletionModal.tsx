@@ -67,7 +67,7 @@ const CompletionModal: React.FC<CompletionModalProps> = ({ appointment, onClose,
                 onClick={() => setPrescriptionType('manual')}
                 className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all ${
                   prescriptionType === 'manual' 
-                    ? 'border-primary-500 bg-primary-50 text-primary-700' 
+                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/20 text-primary-700 dark:text-primary-400' 
                     : 'border-gray-100 dark:border-gray-700 text-gray-500'
                 }`}
               >
@@ -77,7 +77,7 @@ const CompletionModal: React.FC<CompletionModalProps> = ({ appointment, onClose,
                 onClick={() => setPrescriptionType('digital')}
                 className={`flex-1 py-3 px-4 rounded-xl border-2 transition-all ${
                   prescriptionType === 'digital' 
-                    ? 'border-primary-500 bg-primary-50 text-primary-700' 
+                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-950/20 text-primary-700 dark:text-primary-400' 
                     : 'border-gray-100 dark:border-gray-700 text-gray-500'
                 }`}
               >
@@ -127,13 +127,13 @@ const CompletionModal: React.FC<CompletionModalProps> = ({ appointment, onClose,
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Payment Method</label>
             <div className="flex gap-4">
               <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                paymentMethod === 'cash' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-100 dark:border-gray-700 text-gray-500'
+                paymentMethod === 'cash' ? 'border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400' : 'border-gray-100 dark:border-gray-700 text-gray-500'
               }`}>
                 <input type="radio" className="hidden" name="payment" value="cash" checked={paymentMethod === 'cash'} onChange={() => setPaymentMethod('cash')} />
                 <span className="font-medium">Cash</span>
               </label>
               <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all ${
-                paymentMethod === 'online' ? 'border-green-500 bg-green-50 text-green-700' : 'border-gray-100 dark:border-gray-700 text-gray-500'
+                paymentMethod === 'online' ? 'border-green-500 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400' : 'border-gray-100 dark:border-gray-700 text-gray-500'
               }`}>
                 <input type="radio" className="hidden" name="payment" value="online" checked={paymentMethod === 'online'} onChange={() => setPaymentMethod('online')} />
                 <span className="font-medium">Online (UPI/Card)</span>
